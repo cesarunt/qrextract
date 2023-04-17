@@ -1,0 +1,662 @@
+/*------------------------------------------------------------------
+* Bootstrap Simple Admin Template
+* Version: 3.0
+* Author: Alexis Luna
+* Website: https://github.com/alexis-luna/bootstrap-simple-admin-template
+-------------------------------------------------------------------*/
+
+@import "../components/navbar/navbar-dropdowns.css";
+@import "../components/sidebar/sidebar-default.css";
+
+/*------------------------------------------------------------------
+# [Color codes]
+
+# teal: #00b5ad
+# olive: #b5cc18
+# violet: #6435c9
+# orange: #f2711c
+# darkgray: darkgray
+# blue: #2185d0
+# grey: #767676
+# */
+
+/*------------------------------------------------------------------
+[Typography]
+
+Body:           1em / "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif;
+Headers:        2em / "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif;
+parapgraph:     1em / "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif;
+
+Notes:  decreasing heading by 0.4em with every subsequent heading level
+-------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------
+[Table of contents]
+
+1. Body / #body
+2. Header / #header
+3. Navigation / #navbar
+4. Content / #content
+5. Sidebar / #sidebar
+6. Boxes / .box
+7. Dashboard cards / .card
+8. Miscellaneous
+9. Adjustments to dafault behaviors
+10. Colors / .teal, .olive, .violet, .orange, .darkgray, .blue, .grey
+11. Responsive properties
+-------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------
+[1. Body / #body]
+*/
+@font-face {
+    font-family: "Lato";
+    font-style: normal;
+    font-weight: 400;
+    font-display: auto;
+    src: url("../font/Lato-Regular.eot");
+    src: url("../font/Lato-Regular.eot?#iefix") format("embedded-opentype"), url("../font/Lato-Regular.woff") format("woff"), url("../font/Lato-Regular.ttf") format("truetype");
+}
+
+body,
+h1,
+.h1,
+h2,
+.h2,
+h3,
+.h3,
+h4,
+.h4,
+h5,
+.h5,
+h6,
+.h6,
+p,
+a,
+td {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    background: #f4f6fa;
+    font-family: "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    color: #444;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    overflow-x: hidden
+}
+
+#body {
+    width: 100%;
+    padding: 0;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+/*------------------------------------------------------------------
+[2. Header / #header]
+*/
+#body>.navbar {
+    padding: 0 1.25rem 0 0.75rem;
+    min-height: 60px;
+    box-shadow: none;
+    border-bottom: 1px solid rgba(101, 109, 119, .16);
+}
+
+/*------------------------------------------------------------------
+[3. Navigation / #navbar] - see /components/navbar/navbar-dropdown.css
+*/
+.default-light-menu {
+    border: none !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+    color: #fff;
+}
+
+.default-light-menu:hover {
+    background: #2196F3 !important;
+    color: #fff;
+}
+
+/*------------------------------------------------------------------
+[4. Content / #content]
+*/
+#body>.content {
+    position: relative;
+    padding: .5rem;
+    padding-top: 0.25rem;
+}
+
+#body .content .page-title h3 {
+    margin: 1rem 0;
+}
+
+.page-header {
+    margin-top: 1.25rem;
+}
+
+.page-pretitle {
+    font-size: .8rem;
+    text-transform: uppercase;
+    line-height: 1.6;
+    color: #656d77;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.5555556;
+}
+
+.detail-subtitle {
+    font-size: .8rem;
+    text-transform: uppercase;
+    line-height: 1.6;
+}
+
+/*------------------------------------------------------------------
+[5. Sidebar / #sidebar] - see /components/sidebar/sidebar-default.css
+*/
+
+/*------------------------------------------------------------------
+[6. Boxes / .box] 
+*/
+.box {
+    position: relative;
+    border-radius: 3px;
+    background: #ffffff;
+    border-top: 3px solid #d2d6de;
+    margin-bottom: 20px;
+    width: 100%;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.box-body {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    padding: 10px;
+}
+
+.box-footer {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top: 1px solid #f4f4f4;
+    padding: 10px 20px;
+    background-color: #FAFAFA;
+    text-align: right;
+}
+
+.box-primary {
+    border-top-color: #22a1f9;
+}
+
+/*------------------------------------------------------------------
+[7. Dashboard Cards / .card] 
+*/
+.card {
+    margin-bottom: 15px;
+    box-shadow: rgba(35, 46, 60, .04) 0 2px 4px 0;
+}
+
+.card .content {
+    padding: 15px 15px 10px 15px;
+}
+
+.card .content .icon-big {
+    font-size: 3em;
+    min-height: 64px;
+    line-height: 64px;
+}
+
+.card .content .number {
+    font-size: 1.5em;
+    text-align: right;
+    font-weight: bolder;
+}
+
+.card .content .footer {
+    background-attachment: fixed;
+    position: relative;
+    padding: 0;
+    line-height: 30px;
+}
+
+.card .content .stats {
+    display: inline-block;
+    color: #a9a9a9;
+}
+
+.card-title {
+    margin: 1rem 0;
+    font-size:larger;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-title-form {
+    margin: 0;
+    /* font-weight: bold; */
+    text-align: center;
+}
+
+.card-title-info {
+    margin: 0.25rem 0 0.75rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-body button {
+    font-size: smaller;
+  }
+
+.card-text {
+    margin: 0 1rem;
+    text-align: justify;
+}
+
+.card-text-form {
+    margin: 0 0.1rem;
+    font-size: smaller;
+    text-align: justify;
+}
+
+.card-text-info {
+    margin: 0 1rem;
+    font-size: medium;
+    text-align: center;
+}
+
+.card-img-land {
+    width: auto;
+    margin: 0;
+}
+
+.card-img-logo {
+    width: 22%;
+    margin: 0.5rem auto 0;
+}
+
+.card-icon-home {
+    width: 24%;
+    margin: 1rem auto 0;
+}
+
+#result {
+    border: 1px dotted #ccc;
+    padding: 3px;
+  }
+#result ul {
+list-style-type: none;
+padding: 0;
+margin: 0;
+}
+#result ul li {
+padding: 5px 7px;
+}
+#result ul li:hover {
+background: #eee;
+}
+
+canvas{
+border: 1px solid black;
+position: relative;
+}
+  
+.text_area {
+    /* position: absolute; */
+    font-size: smaller;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    width: 100%;
+    height: 100px;
+}
+
+/*------------------------------------------------------------------
+[8. Miscellaneous ] 
+*/
+.line {
+    border-bottom: 1px solid #E0E0E0;
+    margin: 1rem 0;
+    width: 99%;
+}
+
+.nav-pills {
+    padding: 15px;
+    background-color: #E0E0E0;
+    -webkit-box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-rounded {
+    border-radius: 10em;
+    padding: 6px 8px;
+    font-size: small;
+    text-transform: none;
+    text-shadow: none !important;
+    background: #eaeaea;
+    border-color: transparent;
+    border: none;
+}
+
+.btn-rounded:hover {
+    border-color: transparent;
+    border: none;
+}
+
+#myTab {
+    margin-bottom: 15px;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.dfd {
+    width: 100%;
+}
+
+.bg-lighter-grey {
+    background: #FAFAFA;
+}
+
+/*------------------------------------------------------------------
+[9. Adjustments to default behaviors] 
+*/
+a,
+a:hover,
+a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn.focus,
+.btn:focus {
+    box-shadow: none;
+}
+
+.btn.btn-square {
+    border-radius: 0;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before,
+table.dataTable thead .sorting_desc_disabled:after {
+    font-size: .8rem;
+    bottom: .9rem;
+}
+
+.dataTables_info {
+    visibility: hidden;
+}
+
+table.dataTable>tbody>tr.child ul.dtr-details {
+    display: block;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-item {
+    margin-bottom: -2px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    -webkit-transition: color .1s ease;
+    transition: color .1s ease;
+    color: inherit;
+}
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+    color: #007bff;
+    background-color: #fff;
+    border-bottom: 2px solid #22a1f9;
+
+}
+
+.tab-content {
+    padding: 15px;
+}
+
+.svg-inline--fa {
+    min-width: 15px;
+}
+
+.display-absolute {
+    position: absolute;
+}
+
+.large-icon {
+    font-size: 3em;
+}
+
+.license span {
+    margin-bottom: 1em;
+}
+
+/*------------------------------------------------------------------
+[10. Colors / .teal, .olive, .violet, .orange, .darkgray, .blue, .grey] 
+*/
+.teal {
+    color: #00b5ad !important;
+}
+
+.olive {
+    color: #b5cc18 !important;
+}
+
+.violet {
+    color: #6435c9 !important;
+}
+
+.orange {
+    color: #f2711c !important;
+}
+
+.darkgray {
+    color: darkgray !important;
+}
+
+.blue {
+    color: #2185d0 !important;
+}
+
+.grey {
+    color: #767676 !important;
+}
+
+.pagination {
+    display: inline-block;
+}
+
+.pagination a {
+    color: black;
+    float: left;
+    font-size: smaller;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .2s;
+}
+  
+.pagination a.hover {
+    background-color: dodgerblue;
+    color: rgb(34, 31, 31);
+}
+  
+.pagination a:hover:not(.active) {background-color: #ddd;}
+
+/* .pagination-page-info {
+    padding: .6em;
+    padding-left: 0;
+    width: 40em;
+    margin: .5em;
+    margin-left: 0;
+    font-size: 12px;
+}
+.pagination-page-info b {
+    color: black;
+    background: #6aa6ed;
+    padding-left: 2px;
+    padding: .1em .25em;
+    font-size: 150%;
+} */
+
+/*------------------------------------------------------------------
+Popup container
+*/
+.popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* The actual popup (appears on top) */
+.popup .popuptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class when clicking on the popup container (hide and show the popup) */
+.popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;} 
+    to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+}
+
+
+/*------------------------------------------------------------------
+[11. Responsive properties] 
+*/
+@media (max-width: 768px) {
+    .display-absolute {
+        position: relative;
+    }
+}
+
+@media (max-width: 680px) {
+    #body.active .navbar-collapse {
+        display: -ms-flexbox !important;
+        display: flex !important;
+        -ms-flex-preferred-size: auto;
+        flex-basis: auto;
+    }
+
+    .nav-dropdown .nav-link-menu {
+        position: fixed !important;
+        top: 52px !important;
+        width: 100% !important;
+        margin-top: 0;
+    }
+
+    .nav-dropdown .nav-link {
+        padding: 10px;
+    }
+
+    .nav-dropdown .nav-link-menu::before {
+        right: 50%;
+    }
+
+    #body .navbar-collapse {
+        display: none !important;
+    }
+
+    #body .nav-dropdown .nav-item span {
+        display: none !important;
+    }
+
+    .btn-header {
+        display: none;
+    }
+}
+
+@media (min-width: 200px) {
+    .navbar-expand-lg .navbar-collapse {
+        display: -ms-flexbox !important;
+        display: flex !important;
+        -ms-flex-preferred-size: auto;
+        flex-basis: auto;
+    }
+
+    .navbar-expand-lg .navbar-nav {
+        -ms-flex-direction: row;
+        flex-direction: row;
+    }
+}
+
+/*------------------------------------------------------------------
+[12. Form Register] 
+*/
+
+.wrapper_upload {
+    position: relative;
+}
+
+.wrapper_upload span {
+    font-size: 1.4rem;
+    color: darkgray;
+    position: absolute;
+    cursor: pointer;
+    right: 6px;
+    top: 8px;
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Procesador de imágenes con QR</title>
+    <script>
+        async function processImages() {
+            const input = document.getElementById('file');
+            const resultsContainer = document.getElementById('results');
+            
+            const batchSize = 5;
+            for (let i = 0; i < input.files.length; i += batchSize) {
+                const formData = new FormData();
+                for (let j = i; j < Math.min(i + batchSize, input.files.length); j++) {
+                    formData.append('file', input.files[j]);
+                }
+                
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const results = await response.json();
+                
+                // Muestra los resultados
+                for (const result of results) {
+                    const div = document.createElement('div');
+                    div.textContent = JSON.stringify(result);
+                    resultsContainer.appendChild(div);
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Procesador de imágenes con QR API</h1>
+    <input type="file" id="file" multiple>
+    <button onclick="processImages()">Procesar</button>
+    <div id="results"></div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+pip install Flask
+pip install Pillow
+pip install pyzbar
+pip install pytesseract
+
+
+code ...
+
+
+implementar las funciones 'parse_qr_data()' y 'parse_text_data()'

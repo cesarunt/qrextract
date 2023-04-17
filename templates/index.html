@@ -1,0 +1,39 @@
+{% extends "layout_qr.html" %}
+
+{% block content %}
+<!-- BLOCK CONTENT -->
+<div class="content">
+    <div class="container">
+        <div class="row">
+            <div id="alert_wrapper">
+                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="mb-3 text-center">
+                        <label id="file_label" style="margin: 0.5rem 0; width: 100%;">Seleccionar Vouchers</label><br>
+                        <!-- 
+                        <input type="file" name="file[]" multiple>
+                        <input type="submit" value="Procesar">
+                        -->
+                        <input type="file" class="form-control" id="files" name="files[]" multiple="true" autocomplete="off" accept="image/png, application/pdf, image/jpeg">
+                        <input type="hidden" name="process" id="process" value="0" />
+                        <div class="line"></div>
+                        <button class="btn btn-primary" id="progressPDF_btn" onclick="clicQRProgress(this)" type="submit">
+                            <i class="fas fa-file-upload"></i> &nbsp;Procesar
+                        </button>
+                        <div id="process_wrapper" class="text-center d-none">
+                            <img src="{{ url_for('static', filename='img/processing.gif') }}" style="width: 100px; height: 100px;">
+                            <p style="margin:1rem auto;">
+                                <small style="color:gray;" lass="text-muted"><b>procesando vouchers</b></small>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
