@@ -1,17 +1,15 @@
 from concurrent.futures import ThreadPoolExecutor
 from utils.qr import *
 from PIL import Image
-# from datetime import datetime
-from datetime import date
-# import cv2
+from utils.config import cfg
 import pytesseract
+import cv2
 
-GLOBAL_TESSERACT = r'/usr/local/bin/tesseract'
-pytesseract.pytesseract.tesseract_cmd = GLOBAL_TESSERACT
+# GLOBAL_TESSERACT = r'/usr/local/bin/tesseract'
+pytesseract.pytesseract.tesseract_cmd = cfg.GLOBAL.GLOBAL_TESS
 
 
 def getting_text(path, dictCanvas):
-    # current_date = date.today().strftime("%d-%m-%Y")
     # dictCanvas = json.loads(request.values.get("dictCanvas"))
     i = 0
     text_canvas = ""
@@ -19,8 +17,6 @@ def getting_text(path, dictCanvas):
     # dictPage = None
     for dictVal in dictCanvas:
         i += 1
-        # image = app.config['QR_IMG'] + '/' + str(path).split("/")[-1]
-        # image = QR_IMG
         # print("image path", image)
         image = cv2.imread(path, 0)
         # thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
@@ -50,7 +46,6 @@ def process_images(files):
     return results
 
 def process_image(file):
-    # img = Image.open(file.stream)
     measure = []
 
     # Guardar el archivo correspondiente IMG o PDF

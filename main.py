@@ -2,10 +2,10 @@ from flask import Flask, request, render_template, redirect, send_from_directory
 from flask import jsonify
 from utils.concurrent import process_images, getting_text
 from utils.qr import *
+from utils.config import cfg
 import time
 import json
 
-GLOBAL_PATH = os.path.abspath(os.getcwd())
 
 main = Flask(__name__)
 
@@ -58,7 +58,7 @@ def upload():
     
     elif action == "get_canvas":
             index = int(request.values.get("index"))
-            path = GLOBAL_PATH + "/" + request.values.get("path")
+            path = cfg.GLOBAL.GLOBAL_PATH + "/" + request.values.get("path")
             dictCanvas = json.loads(request.values.get("dictCanvas"))
             text_canvas = getting_text(path, dictCanvas)
             if text_canvas!="":
@@ -85,7 +85,7 @@ def upload():
 
 @main.route('/files/upload/<filename>')
 def upload_img(filename):
-    return send_from_directory(GLOBAL_PATH+'/files/upload', filename)
+    return send_from_directory(cfg.GLOBAL.GLOBAL_PATH+'/files/upload', filename)
 
 # OPTION 3
 # @app.route('/upload', methods=['POST'])

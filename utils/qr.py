@@ -1,6 +1,6 @@
 from PIL import Image
 from pyzbar import pyzbar
-import cv2
+# import cv2
 import re
 import os
 
@@ -10,17 +10,11 @@ def save_file(file):
     img = Image.open(file.stream)
     filename = file.filename
     filename = filename.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
-    # path = os.path.join(GLOBAL_PATH + '/files/upload', filename)
-    # path = validate_path(path)
-    # file.save(path)
     # Verify Image Name and Extension
-    # filename = filename.split("/")[-1]
     file_ext = filename.split(".")[-1]
     path = ""
 
     if (file_ext.upper()=='JPG' or  file_ext.upper()=='JPEG'):
-        # file_image = cv2.imread(path)
-        # print(file_image)
         image_width  = 0
         image_height = 0
 
@@ -41,7 +35,6 @@ def save_file(file):
                 image_width = 640
                 image_height = 900
         # SAVE and ready to read by QR
-        # path = os.path.join(app.config['QR_IMG'], filename)
         path = os.path.join(GLOBAL_PATH + '/files/upload', filename)
         img = img.resize((image_width, image_height), Image.ANTIALIAS)
         img.save(path)
@@ -236,6 +229,4 @@ def parse_text_data(text, measure, path):
             'center_w':  measure['center_w'],
             'path':     path
             }
-    # print("data Text")
-    # print(data)
     return data
