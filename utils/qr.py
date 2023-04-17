@@ -1,10 +1,10 @@
 from PIL import Image
 from pyzbar import pyzbar
-# import cv2
+from utils.config import cfg
 import re
 import os
 
-GLOBAL_PATH = os.path.abspath(os.getcwd())
+# GLOBAL_PATH = os.path.abspath(os.getcwd())
 
 def save_file(file):
     img = Image.open(file.stream)
@@ -35,7 +35,7 @@ def save_file(file):
                 image_width = 640
                 image_height = 900
         # SAVE and ready to read by QR
-        path = os.path.join(GLOBAL_PATH + '/files/upload', filename)
+        path = os.path.join(cfg.GLOBAL.GLOBAL_PATH + '/files/upload', filename)
         img = img.resize((image_width, image_height), Image.ANTIALIAS)
         img.save(path)
         path = os.path.join('files/upload', filename)
