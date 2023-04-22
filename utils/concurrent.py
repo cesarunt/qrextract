@@ -2,10 +2,10 @@ from concurrent.futures import ThreadPoolExecutor
 from utils.qr import *
 from PIL import Image
 from utils.config import cfg
+import concurrent.futures
 import pytesseract
 import cv2
 
-# GLOBAL_TESSERACT = r'/usr/local/bin/tesseract'
 pytesseract.pytesseract.tesseract_cmd = cfg.GLOBAL.GLOBAL_TESS
 
 
@@ -40,9 +40,14 @@ def getting_text(path, dictCanvas):
     return text_canvas
 
 def process_images(files):
-    results = []
+    # results = []
     with ThreadPoolExecutor() as executor:
-        results = list(executor.map(process_image, files))
+        # results = list(executor.map(process_image, files))
+        results = []
+        for file in files:
+            results.append(executor.submit(process_image, file))
+        for future in concurrent.futures.as_completed(results):
+            print(future.result())
     return results
 
 def process_image(file):

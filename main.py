@@ -88,11 +88,11 @@ def upload_img(filename):
     return send_from_directory(cfg.GLOBAL.GLOBAL_PATH+'/files/upload', filename)
 
 # OPTION 3
-@main.route('/upload', methods=['POST'])
-def upload():
-    files = [request.files[file_key] for file_key in request.files]
-    results = process_images(files)
-    return jsonify(results)
+# @main.route('/upload', methods=['POST'])
+# def upload():
+#     files = [request.files[file_key] for file_key in request.files]
+#     results = process_images(files)
+#     return jsonify(results)
 
 if __name__ == '__main__':
     print("__main__")
