@@ -20,10 +20,8 @@ def index():
 # def upload():
 #     files = request.files.getlist("file")
 #     results = []
-
 #     for file in files:
 #         img = Image.open(file.stream)
-
 #         # Procesar el código QR
 #         qr_data = decode(img)
 #         if qr_data:
@@ -31,11 +29,10 @@ def index():
 #         else:
 #             # Extraer texto de la imagen
 #             text = pytesseract.image_to_string(img)
-
 #             # Buscar datos en el texto
 #             results.append(parse_text_data(text))
-
 #     return render_template('results.html', results=results)
+
 
 # OPTION 2
 @main.route('/upload', methods=['POST'])
@@ -73,6 +70,7 @@ def upload():
                 start_time = time.time()
                 files = request.files.getlist("files[]")
                 results = process_images(files)
+                # print("results", results)
                 print("Time:  --- %s seconds ---" % round(time.time() - start_time, 2))
                 return render_template('results.html', results=results, data_len=len(results))
             else:
@@ -87,12 +85,14 @@ def upload():
 def upload_img(filename):
     return send_from_directory(cfg.GLOBAL.GLOBAL_PATH+'/files/upload', filename)
 
+
 # OPTION 3
 # @main.route('/upload', methods=['POST'])
 # def upload():
 #     files = [request.files[file_key] for file_key in request.files]
 #     results = process_images(files)
 #     return jsonify(results)
+
 
 if __name__ == '__main__':
     print("__main__")

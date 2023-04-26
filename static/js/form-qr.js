@@ -183,7 +183,7 @@ function closeVoucher(index) {
   document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
   const elements = document.getElementsByClassName("modal-backdrop");
   while (elements.length > 0) elements[0].remove();
-  // location.reload();
+  location.reload();
 }
 
 // ACTION in order to MOVE voucher down & up

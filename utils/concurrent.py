@@ -1,6 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
 from utils.qr import *
-from PIL import Image
 from utils.config import cfg
 import concurrent.futures
 import pytesseract
@@ -40,14 +39,13 @@ def getting_text(path, dictCanvas):
     return text_canvas
 
 def process_images(files):
-    # results = []
+    results = []
     with ThreadPoolExecutor() as executor:
-        # results = list(executor.map(process_image, files))
-        results = []
+        futures = []
         for file in files:
-            results.append(executor.submit(process_image, file))
-        for future in concurrent.futures.as_completed(results):
-            print(future.result())
+            futures.append(executor.submit(process_image, file))
+        for future in concurrent.futures.as_completed(futures):
+            results.append(future.result())
     return results
 
 def process_image(file):
@@ -70,4 +68,3 @@ def process_image(file):
 
         # Buscar datos en el texto
         return parse_text_data(text, measure, path)
-        

@@ -4,10 +4,10 @@ from utils.config import cfg
 import re
 import os
 
-# GLOBAL_PATH = os.path.abspath(os.getcwd())
 
 def save_file(file):
     img = Image.open(file.stream)
+    img_original = img
     filename = file.filename
     filename = filename.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
     # Verify Image Name and Extension
@@ -42,9 +42,8 @@ def save_file(file):
     elif (file_ext.upper()=='PDF'):
         # Extract IMG, SAVE IMG and ready to read by QR
         print("SAVE PDF")
-        # result_pdf, filename = split_img_qr(path, app.config['QR_IMG'])
    
-    return img, path
+    return img_original, path
 
 
 def parse_img_data(img):
@@ -80,6 +79,54 @@ def parse_img_data(img):
     return measure
 
 
+def get_barcodes(barcodeData):
+    data = {}
+    band_ciaruc = False
+    band_clifac = False
+    band_clitot = False
+    data['type_doc'] = ""
+    data['currency'] = "S"
+
+    if len(barcodeData) > 7:
+        data['is_full'] = 1
+    for code in barcodeData:
+        # Find RUC (cia and cli)
+        if len(code)==11:
+            if band_ciaruc==False:
+                data['cia_ruc'] = code
+                band_ciaruc = True
+            else:
+                data['cli_ruc'] = code
+        # Find BILL
+        if band_clifac==False:
+            if len(code)>0 and (code[0]=='F' or code[0]=='B'):
+                if code[0]=='F':
+                    data['type_doc'] = "F"
+                if code[0]=='B':
+                    data['type_doc'] = "B"
+                data['cli_fac'] = code[1:]
+                band_clifac = True
+            if len(code)>10 and str(code).count('-')==2:
+                data['type_doc'] = "F"
+                data['cli_fac'] = code
+        else:
+            data['cli_fac'] += '-' + code
+            band_clifac = False
+        # Find TOTAL and IGV
+        if str(code).count('.') == 1 and len(code.rsplit('.')[-1]) == 2:
+            if band_clitot==False:
+                data['cli_igv'] = code
+                data['cli_tot'] = code
+                band_clitot = True
+            else:
+                data['cli_tot'] = code
+        # Find DATE
+        if len(code)==10 and (str(code).count('-')==2 or str(code).count('/')==2):
+            data['cli_dat'] = code
+
+    return data
+
+
 def parse_qr_data(img, measure, path):
     print("processing qr ...")
     # Aquí va la lógica para extraer los datos del código QR
@@ -91,38 +138,16 @@ def parse_qr_data(img, measure, path):
         for barcode in barcodes:
             barcodeText = str(barcode.data.decode("utf-8"))
             barcodeData = barcodeText.split('|')
-        # print("barcodeData LEN", len(barcodeData))
+        # print("\nbarcodeData LEN", len(barcodeData))
         # print("barcodeData CONTENT", barcodeData)
-        # IS FULL
-        barcode_isok = 0
-        if len(barcodeData) > 7:
-            barcode_isok = 1
-            # GET BILL NUMBER
-            n = 1
-            if len(barcodeData[n].split('-')) > 1:
-                barcode_fac = barcodeData[n]
-            else:
-                barcode_fac = barcodeData[n]+'-'+barcodeData[n+1]
 
-            data = {
-                    'is_full':  barcode_isok,
-                    'cia_ruc':  barcodeData[0],
-                    'cli_fac':  barcode_fac,
-                    'cli_igv':  barcodeData[n+1],
-                    'cli_tot':  barcodeData[n+2],
-                    'cli_dat':  barcodeData[n+3],
-                    'cli_nam':  barcodeData[n+4],
-                    'cli_ruc':  barcodeData[n+5],
-                    'currency': "S",
-                    'type_doc': "F",
-                    'measure':   measure['measure'],
-                    'measure_w': measure['measure_w'],
-                    'measure_h': measure['measure_h'],
-                    'center_w':  measure['center_w'],
-                    'path':     path
-                }
-    # print("data QR")
-    # print(data)
+        data = get_barcodes(barcodeData)
+        data['measure']  = measure['measure']
+        data['measure_w'] = measure['measure_w']
+        data['measure_h'] = measure['measure_h']
+        data['center_w'] = measure['center_w']
+        data['path']  = path
+
     return data
 
 
@@ -131,9 +156,8 @@ def parse_text_data(text, measure, path):
     # Aquí va la lógica para extraer los datos del texto
     data = []
     res_rucs = None
-    patterns_cli_igv = ["IGV:", "IGV "]
-    patterns_cli_tot = ["TOTAL:" , "TOTAL "]
-    # patterns_cli_fec = []
+    patterns_cli_igv = ["IGV 18", "I.G.V", "IGV"]
+    patterns_cli_tot = ["IMPORTE TOTAL", "TOTAL S" , "TOTAL"]
     data_cia_ruc = ""
     data_cli_fac = ""
     data_cli_igv = ""
@@ -141,12 +165,8 @@ def parse_text_data(text, measure, path):
     data_cli_fec = ""
     data_cli_ruc = ""
 
+    # print("\nTEXT", text)
     # FIND RUC
-    # res_rucs = re.search("2\d{10,}", text)
-    # if res_rucs != None:
-    #     print("res_rucs", res_rucs)
-    #     # if len_ruc == 1:
-    #     data_cia_ruc = str(res_rucs.group(0))[1:]
     res_rucs = re.findall("2\d{10,}", text)
     len_ruc = len(res_rucs)    
     if len_ruc>0:
@@ -161,8 +181,10 @@ def parse_text_data(text, measure, path):
     #     # input(" .-.-. ")
     #     if len(res_rucs)>0:
     #         data_cia_ruc = str(res_rucs[0][3:]).split(" ")[0]
+    
     # FIND BILL NUMBER
-    res_bill_1 = re.search("[F,E]\d{3}", text)
+    res_bill_1 = re.search("[F,B]\d{3}", text)
+    # print("\nFactura", res_bill_1)
     # res_bill_1 = re.findall("[F,E]\d{3}", text)
     # if len(res_bill_1) > 0:
     if res_bill_1 != None:
@@ -183,7 +205,7 @@ def parse_text_data(text, measure, path):
         if patt != None :
             obj = str(text[patt.start(0):]).split("\n")[0].upper()
             if len(obj)>0:
-                data_cli_tot = str(obj.split(pattern)[-1]).replace(" ","").replace(":","").replace("S","").replace("$","").replace("/","").replace("%","").replace("-","").replace("I","").replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
+                data_cli_tot = str(obj.split(pattern)[-1]).replace(" ","").replace(":","").replace("S","").replace("$","").replace("/","").replace("%","").replace("-","").replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
                 break
     # FIND IGV
     for pattern in patterns_cli_igv :
@@ -191,7 +213,7 @@ def parse_text_data(text, measure, path):
         if patt != None :
             obj = str(text[patt.start(0):]).split("\n")[0].upper()
             if len(obj)>0:
-                data_cli_igv = str(obj.split(pattern)[-1]).replace(" ",'').replace(":",'').replace("S",'').replace("$",'').replace("/",'').replace("%",'').replace("-",'').replace("I","").replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
+                data_cli_igv = str(obj.split(pattern)[-1]).replace(" ",'').replace(":",'').replace("%",'').replace("$",'').replace("/",'').replace("%",'').replace("-",'').replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
                 break
     data_cli_tot = str(data_cli_tot).replace('—','')
     # FIND DATE
@@ -205,12 +227,8 @@ def parse_text_data(text, measure, path):
     #         data_cli_fec = pattern.group(0)
     #         break
     
-    # res_data = [data_cia_ruc, data_cli_fac, data_cli_igv, data_cli_tot, data_cli_fec, data_cli_ruc]
-    
     # IS FULL
     barcode_isok = 2
-    # if res_len>4:
-    #     barcode_isok = 2
     
     data = {
             'is_full':  barcode_isok,
@@ -219,7 +237,6 @@ def parse_text_data(text, measure, path):
             'cli_igv':  data_cli_igv,
             'cli_tot':  data_cli_tot,
             'cli_dat':  data_cli_fec,
-            'cli_nam':  "",
             'cli_ruc':  data_cli_ruc,
             'currency': "S",
             'type_doc': "F",
@@ -229,4 +246,5 @@ def parse_text_data(text, measure, path):
             'center_w':  measure['center_w'],
             'path':     path
             }
+    
     return data
