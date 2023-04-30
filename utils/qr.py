@@ -207,6 +207,7 @@ def parse_text_data(text, measure, path):
             if len(obj)>0:
                 data_cli_tot = str(obj.split(pattern)[-1]).replace(" ","").replace(":","").replace("S","").replace("$","").replace("/","").replace("%","").replace("-","").replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
                 break
+    data_cli_tot = ''.join(filter(str.isdigit, data_cli_tot))
     # FIND IGV
     for pattern in patterns_cli_igv :
         patt = re.search(rf"{pattern}", text, re.IGNORECASE)
@@ -215,7 +216,7 @@ def parse_text_data(text, measure, path):
             if len(obj)>0:
                 data_cli_igv = str(obj.split(pattern)[-1]).replace(" ",'').replace(":",'').replace("%",'').replace("$",'').replace("/",'').replace("%",'').replace("-",'').replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
                 break
-    data_cli_tot = str(data_cli_tot).replace('—','')
+    data_cli_igv = ''.join(filter(str.isdigit, data_cli_igv))
     # FIND DATE
     # data_cli_fec = ""
     # patterns_cli_fec.append(re.search(r'\d{2}/\d{2}/\d{4}', text))
