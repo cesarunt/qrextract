@@ -1,10 +1,9 @@
 from flask import Flask, request, render_template, redirect, send_from_directory
 from flask import jsonify
-from utils.concurrent import process_images, getting_text
+from utils.concurrent import process_image, getting_text # process_images
 from utils.qr import *
 from utils.config import cfg
-import time
-import json
+import time, json
 
 
 main = Flask(__name__)
@@ -52,7 +51,6 @@ def upload():
         results[index]['cli_igv']  = request.values.get("data_igv")
         results[index]['is_full']  = 1
         return render_template('results.html', results=results, data_len=len(results))
-    
     elif action == "get_canvas":
             index = int(request.values.get("index"))
             path = cfg.GLOBAL.GLOBAL_PATH + "/" + request.values.get("path")
@@ -69,13 +67,21 @@ def upload():
             if len(files_size) > 0:
                 start_time = time.time()
                 files = request.files.getlist("files[]")
-                results = process_images(files)
-                # print("results", results)
+                results = []
+                for file in files:
+                    data = process_image(file)
+                    results.append(data)
                 print("Time:  --- %s seconds ---" % round(time.time() - start_time, 2))
                 return render_template('results.html', results=results, data_len=len(results))
             else:
                 url = str(request.url).split('/upload')[0]
                 return redirect(url)
+            # if len(files_size) > 0:
+            #     start_time = time.time()
+            #     files = request.files.getlist("files[]")
+            #     results = process_images(files)
+            #     print("Time:  --- %s seconds ---" % round(time.time() - start_time, 2))
+            #     return render_template('results.html', results=results, data_len=len(results))
         else:
             print("Update list results without process")
             return render_template('results.html', results=results, data_len=len(results))
