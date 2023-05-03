@@ -79,11 +79,12 @@ def parse_img_data(img):
     return measure
 
 
-def get_barcodes(barcodeData):
+def get_barcodes(barcodeData, list_bill):
     data = {}
+    repeat = False
     band_ciaruc = False
-    band_clifac = False
     band_clitot = False
+    band_clifac = False
     data['type_doc'] = ""
     data['currency'] = "S"
 
@@ -106,9 +107,15 @@ def get_barcodes(barcodeData):
                     data['type_doc'] = "B"
                 data['cli_fac'] = code[1:]
                 band_clifac = True
+                if data['cli_fac'] in list_bill:
+                    repeat = True
+                    break
             if len(code)>10 and str(code).count('-')==2:
                 data['type_doc'] = "F"
                 data['cli_fac'] = code
+                if data['cli_fac'] in list_bill:
+                    repeat = True
+                    break
         else:
             data['cli_fac'] += '-' + code
             band_clifac = False
@@ -124,13 +131,14 @@ def get_barcodes(barcodeData):
         if len(code)==10 and (str(code).count('-')==2 or str(code).count('/')==2):
             data['cli_dat'] = code
 
-    return data
+    return data, repeat
 
 
-def parse_qr_data(img, measure, path):
+def parse_qr_data(img, measure, path, list_bill):
     print("processing qr ...")
     # Aquí va la lógica para extraer los datos del código QR
     data = []
+    bill = ""
     barcodes = pyzbar.decode(img)
         
     if len(barcodes) > 0 :
@@ -141,20 +149,25 @@ def parse_qr_data(img, measure, path):
         # print("\nbarcodeData LEN", len(barcodeData))
         # print("barcodeData CONTENT", barcodeData)
 
-        data = get_barcodes(barcodeData)
-        data['measure']  = measure['measure']
-        data['measure_w'] = measure['measure_w']
-        data['measure_h'] = measure['measure_h']
-        data['center_w'] = measure['center_w']
-        data['path']  = path
+        data, repeat = get_barcodes(barcodeData, list_bill)        
+        if repeat == True:
+            bill = data['cli_fac']
+        else:
+            data['measure']  = measure['measure']
+            data['measure_w'] = measure['measure_w']
+            data['measure_h'] = measure['measure_h']
+            data['center_w'] = measure['center_w']
+            data['path']  = path
 
-    return data
+    return data, bill
 
 
-def parse_text_data(text, measure, path):
+def parse_text_data(text, measure, path, list_bill):
     print("processing text ...")
     # Aquí va la lógica para extraer los datos del texto
     data = []
+    bill = ""
+    repeat = False
     res_rucs = None
     patterns_cli_igv = ["IGV 18", "I.G.V", "IGV"]
     patterns_cli_tot = ["IMPORTE TOTAL", "TOTAL S" , "TOTAL"]
@@ -166,86 +179,94 @@ def parse_text_data(text, measure, path):
     data_cli_ruc = ""
 
     # print("\nTEXT", text)
-    # FIND RUC
-    res_rucs = re.findall("2\d{10,}", text)
-    len_ruc = len(res_rucs)    
-    if len_ruc>0:
-        if len_ruc == 1:
-            data_cia_ruc = res_rucs[0]
-        elif len_ruc>1:
-            data_cia_ruc = res_rucs[0]
-            data_cli_ruc = res_rucs[1]
-    # else:
-    #     res_rucs = re.findall(r"RUC2[0-9]+(?:-[0-9]+)", text)
-    #     print(".........res_rucs", res_rucs)
-    #     # input(" .-.-. ")
-    #     if len(res_rucs)>0:
-    #         data_cia_ruc = str(res_rucs[0][3:]).split(" ")[0]
-    
+
     # FIND BILL NUMBER
     res_bill_1 = re.search("[F,B]\d{3}", text)
-    # print("\nFactura", res_bill_1)
-    # res_bill_1 = re.findall("[F,E]\d{3}", text)
-    # if len(res_bill_1) > 0:
     if res_bill_1 != None:
         data_cli_fac = str(text[res_bill_1.start(0):]).split("\n")[0]
+        data_cli_fac = data_cli_fac.replace(" ","").replace("]","").replace("[","")
         # data_cli_fac = res_bill_1[0]
     else:
         match = False
         res_bill_2 = re.search(" A\w{5,15}", text)
         if res_bill_2 != None:
-            # res_bill_ = str(text[res_bill_2.start(0):]).split(" ")[0]
             res_bill_ = str(res_bill_2.group(0))[1:].split(" ")[0]
             match = re.search(r'[a-zA-Z]+', res_bill_) and re.search(r'[0-9]+', res_bill_)
             if match:
                 data_cli_fac = res_bill_
-    # FIND TOTAL
-    for pattern in patterns_cli_tot :
-        patt = re.search(rf"\b{pattern}", text, re.IGNORECASE)
-        if patt != None :
-            obj = str(text[patt.start(0):]).split("\n")[0].upper()
-            if len(obj)>0:
-                data_cli_tot = str(obj.split(pattern)[-1]).replace(" ","").replace(":","").replace("S","").replace("$","").replace("/","").replace("%","").replace("-","").replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
-                break
-    data_cli_tot = ''.join(filter(str.isdigit, data_cli_tot))
-    # FIND IGV
-    for pattern in patterns_cli_igv :
-        patt = re.search(rf"{pattern}", text, re.IGNORECASE)
-        if patt != None :
-            obj = str(text[patt.start(0):]).split("\n")[0].upper()
-            if len(obj)>0:
-                data_cli_igv = str(obj.split(pattern)[-1]).replace(" ",'').replace(":",'').replace("%",'').replace("$",'').replace("/",'').replace("%",'').replace("-",'').replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
-                break
-    data_cli_igv = ''.join(filter(str.isdigit, data_cli_igv))
-    # FIND DATE
-    # data_cli_fec = ""
-    # patterns_cli_fec.append(re.search(r'\d{2}/\d{2}/\d{4}', text))
-    # patterns_cli_fec.append(re.search(r'\d{2}-\d{2}-\d{4}', text))
-    # patterns_cli_fec.append(re.search(r'\d{4}/\d{2}/\d{2}', text))
-    # patterns_cli_fec.append(re.search(r'\d{4}-\d{2}-\d{2}', text))
-    # for pattern in patterns_cli_fec :
-    #     if pattern != None:
-    #         data_cli_fec = pattern.group(0)
-    #         break
+                data_cli_fac = data_cli_fac.replace(" ","").replace("]","").replace("[","")
+
+    if data_cli_fac != "" and data_cli_fac in list_bill:
+        # print('data_cli_fac REPEAT', data_cli_fac)
+        repeat = True
     
-    # IS FULL
-    barcode_isok = 2
+    if repeat == True:
+        bill = data_cli_fac
+    else:
+        # repeat == False:
+        # FIND RUC
+        res_rucs = re.findall("2\d{10,}", text)
+        len_ruc = len(res_rucs)    
+        if len_ruc>0:
+            if len_ruc == 1:
+                data_cia_ruc = res_rucs[0]
+            elif len_ruc>1:
+                data_cia_ruc = res_rucs[0]
+                data_cli_ruc = res_rucs[1]
+        # else:
+        #     res_rucs = re.findall(r"RUC2[0-9]+(?:-[0-9]+)", text)
+        #     print(".........res_rucs", res_rucs)
+        #     # input(" .-.-. ")
+        #     if len(res_rucs)>0:
+        #         data_cia_ruc = str(res_rucs[0][3:]).split(" ")[0]
+            
+        # FIND TOTAL
+        for pattern in patterns_cli_tot :
+            patt = re.search(rf"\b{pattern}", text, re.IGNORECASE)
+            if patt != None :
+                obj = str(text[patt.start(0):]).split("\n")[0].upper()
+                if len(obj)>0:
+                    data_cli_tot = str(obj.split(pattern)[-1]).replace(" ","").replace(":","").replace("S","").replace("$","").replace("/","").replace("%","").replace("-","").replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
+                    break
+        data_cli_tot = ''.join(filter(str.isdigit, data_cli_tot))
+        # FIND IGV
+        for pattern in patterns_cli_igv :
+            patt = re.search(rf"{pattern}", text, re.IGNORECASE)
+            if patt != None :
+                obj = str(text[patt.start(0):]).split("\n")[0].upper()
+                if len(obj)>0:
+                    data_cli_igv = str(obj.split(pattern)[-1]).replace(" ",'').replace(":",'').replace("%",'').replace("$",'').replace("/",'').replace("%",'').replace("-",'').replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
+                    break
+        data_cli_igv = ''.join(filter(str.isdigit, data_cli_igv))
+        # FIND DATE
+        # data_cli_fec = ""
+        # patterns_cli_fec.append(re.search(r'\d{2}/\d{2}/\d{4}', text))
+        # patterns_cli_fec.append(re.search(r'\d{2}-\d{2}-\d{4}', text))
+        # patterns_cli_fec.append(re.search(r'\d{4}/\d{2}/\d{2}', text))
+        # patterns_cli_fec.append(re.search(r'\d{4}-\d{2}-\d{2}', text))
+        # for pattern in patterns_cli_fec :
+        #     if pattern != None:
+        #         data_cli_fec = pattern.group(0)
+        #         break
+        
+        # IS FULL
+        barcode_isok = 2
+        
+        data = {
+                'is_full':  barcode_isok,
+                'cia_ruc':  data_cia_ruc,
+                'cli_fac':  data_cli_fac,
+                'cli_igv':  data_cli_igv,
+                'cli_tot':  data_cli_tot,
+                'cli_dat':  data_cli_fec,
+                'cli_ruc':  data_cli_ruc,
+                'currency': "S",
+                'type_doc': "F",
+                'measure':   measure['measure'],
+                'measure_w': measure['measure_w'],
+                'measure_h': measure['measure_h'],
+                'center_w':  measure['center_w'],
+                'path':     path
+                }
     
-    data = {
-            'is_full':  barcode_isok,
-            'cia_ruc':  data_cia_ruc,
-            'cli_fac':  data_cli_fac,
-            'cli_igv':  data_cli_igv,
-            'cli_tot':  data_cli_tot,
-            'cli_dat':  data_cli_fec,
-            'cli_ruc':  data_cli_ruc,
-            'currency': "S",
-            'type_doc': "F",
-            'measure':   measure['measure'],
-            'measure_w': measure['measure_w'],
-            'measure_h': measure['measure_h'],
-            'center_w':  measure['center_w'],
-            'path':     path
-            }
-    
-    return data
+    return data, bill

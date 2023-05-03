@@ -240,7 +240,9 @@
                         </div>
                     </div>
                 </form>
-
+                {% if data_repeat > 0 %}
+                <p class="text-dark" style="text-align: center; font-size: medium; font-weight: 300;">Total de Repetidos: <b>{{ data_repeat }}</b></p>
+                {% endif %}
                 <div class="line" style="text-align: left; width: 100%; margin: 1rem 0; border-color: #999;"></div>
                 <div class="mb-3 text-center" style="margin: 2rem 0;">
                     <input type="hidden" name="process" id="process" value="1" />

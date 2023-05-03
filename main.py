@@ -68,11 +68,20 @@ def upload():
                 start_time = time.time()
                 files = request.files.getlist("files[]")
                 results = []
+                list_bill = []
+                list_repeat = []
                 for file in files:
-                    data = process_image(file)
-                    results.append(data)
+                    data, bill = process_image(file, list_bill)
+                    if bill != "":
+                        list_repeat.append(bill)
+                        continue
+                    elif len(data)>0:
+                        list_bill.append(data['cli_fac'])
+                        results.append(data)
+
                 print("Time:  --- %s seconds ---" % round(time.time() - start_time, 2))
-                return render_template('results.html', results=results, data_len=len(results))
+                # print("Repetidos: ", len(list_repeat))
+                return render_template('results.html', results=results, data_len=len(results), data_repeat=len(list_repeat))
             else:
                 url = str(request.url).split('/upload')[0]
                 return redirect(url)

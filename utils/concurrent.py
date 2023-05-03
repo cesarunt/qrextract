@@ -54,7 +54,7 @@ def process_images(files):
         results = list(executor.map(process_image, files))
     return results
 
-def process_image(file):
+def process_image(file, list_bill):
     measure = []
 
     # Guardar el archivo correspondiente IMG o PDF
@@ -64,13 +64,18 @@ def process_image(file):
     measure = parse_img_data(img)
 
     # Procesar el código QR
-    data = parse_qr_data(img, measure, path)
+    data, bill = parse_qr_data(img, measure, path, list_bill)
+    # print("bill:", bill)
 
+    # Data OK y Bill No es Repetido
     if len(data)>0:
-        return data
+        return data, bill
+    # # Data NULL y Bill es Repetido
+    # if len(data)==0 and bill>0:
+    #     return data, bill
     else:
         # Extraer texto de la imagen
-        text = pytesseract.image_to_string(img, lang='spa', config='--psm 6')
-
+        text = pytesseract.image_to_string(img, lang='spa', config='--dpi 2 --psm 6')
+        data, bill = parse_text_data(text, measure, path, list_bill)
         # Buscar datos en el texto
-        return parse_text_data(text, measure, path)
+        return data, bill
