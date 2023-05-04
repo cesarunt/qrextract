@@ -11,7 +11,7 @@
         </div>
         <div class="row">
             <div class="col-sm-12">
-                <form method="POST" action="upload" enctype="multipart/form-data">
+                <form method="POST" action="/qr" enctype="multipart/form-data">
                     <div class="card">
                         <!-- <div class="card-header text-center"><b>Lista de Vouchers</b></div> -->
                         <div class="card-body" style="padding-top: 0;">
@@ -147,12 +147,16 @@
                                                             <div class="row g-2">
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">Tipo DOC</p>
-                                                                    <input type="text" class="form-control" id="data_type" name="data_type" value="{{ data.type_doc }}" onclick="setValueItem(this, '{{loop.index}}')" required>
+                                                                    {% if data.type_doc == 'F' %}
+                                                                    <input type="text" class="form-control" id="data_type" name="data_type" value="Factura" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    {% else %}
+                                                                    <input type="text" class="form-control" id="data_type" name="data_type" value="Boleta" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    {% endif %}
                                                                     <div class="valid-feedback">OK!</div>
                                                                     <div class="invalid-feedback">Ingrese tipo</div>
                                                                 </div>
                                                                 <div class="mb-3 col-md-6">
-                                                                    <p style="margin: 0 5px 0; color: darkgrey;">Nro Factura</p>
+                                                                    <p style="margin: 0 5px 0; color: darkgrey;">Nro Documento</p>
                                                                     {% if data.cli_fac %}
                                                                     <input type="text" class="form-control" id="data_bill" name="data_bill" value="{{ data.cli_fac }}" onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% else %}
@@ -223,7 +227,8 @@
                                                             </div>
                                                             <div class="line" style="text-align: left; width: 99%; margin: 0.5rem 0 1.75rem; border-color: #999;"></div>
                                                             <div class="col-md-12 col-lg-12 text-center" style="margin: 1rem 0 1rem;">
-                                                                <button type="submit" class="btn btn-primary" onclick="saveVoucher(this, '{{ request.url }}', '{{ loop.index }}')" style="font-size: medium;" > &nbsp; Guardar &nbsp; </button>
+                                                                <button type="button" class="btn btn-primary" onclick="saveVoucher(this, '{{ request.url }}', '{{ loop.index }}')" style="font-size: medium;" > &nbsp; Guardar &nbsp; 
+                                                                </button>
                                                                 <a href="#" onclick="closeVoucher('{{loop.index}}')">
                                                                     <button type="button" class="btn btn-secondary" style="margin: 0rem; font-size: medium;">&nbsp; Cerrar &nbsp;</button>
                                                                 </a>
@@ -246,7 +251,7 @@
                 <div class="line" style="text-align: left; width: 100%; margin: 1rem 0; border-color: #999;"></div>
                 <div class="mb-3 text-center" style="margin: 2rem 0;">
                     <input type="hidden" name="process" id="process" value="1" />
-                    <a href="{{ url_for('index') }}">
+                    <a href="{{ url_for('qr') }}">
                         <button class="btn btn-secondary" type="button" id="cancelPDF_btn">&nbsp; INICIO &nbsp;</button>
                     </a>
                 </div>

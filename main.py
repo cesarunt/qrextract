@@ -3,13 +3,13 @@ from flask import jsonify
 from utils.concurrent import process_image, getting_text # process_images
 from utils.qr import *
 from utils.config import cfg
-import time, json
-
+import time, json, os
+from werkzeug.utils import secure_filename
 
 main = Flask(__name__)
 
-@main.route('/')
-def index():
+@main.route('/qr')
+def qr():
     global results
     results = []
     return render_template('index.html')
@@ -34,8 +34,8 @@ def index():
 
 
 # OPTION 2
-@main.route('/upload', methods=['POST'])
-def upload():
+@main.route('/qr', methods=['POST'])
+def qr_post():
     global results
     action = request.values.get("action")
     
@@ -50,7 +50,7 @@ def upload():
         results[index]['cli_tot']  = request.values.get("data_tot")
         results[index]['cli_igv']  = request.values.get("data_igv")
         results[index]['is_full']  = 1
-        return render_template('results.html', results=results, data_len=len(results))
+        return render_template('results.html', results=results, data_len=len(results), data_repeat=0)
     elif action == "get_canvas":
             index = int(request.values.get("index"))
             path = cfg.GLOBAL.GLOBAL_PATH + "/" + request.values.get("path")
@@ -60,53 +60,38 @@ def upload():
                 return jsonify({'text_canvas': text_canvas})
             else:
                 return jsonify({'text_canvas': "-"})
-
     else:
         if len(results)==0:
-            files_size = request.files['files[]'].read()
-            if len(files_size) > 0:
-                start_time = time.time()
-                files = request.files.getlist("files[]")
-                results = []
-                list_bill = []
-                list_repeat = []
-                for file in files:
-                    data, bill = process_image(file, list_bill)
-                    if bill != "":
-                        list_repeat.append(bill)
-                        continue
-                    elif len(data)>0:
-                        list_bill.append(data['cli_fac'])
-                        results.append(data)
+            start_time = time.time()
+            files = request.files.getlist('files[]')
+            results = []
+            list_bill = []
+            list_repeat = []
+            for file in files:
+                data, bill = process_image(file, list_bill)
+                if bill != "":
+                    list_repeat.append(bill)
+                    continue
+                elif len(data)>0:
+                    list_bill.append(data['cli_fac'])
+                    results.append(data)
 
-                print("Time:  --- %s seconds ---" % round(time.time() - start_time, 2))
-                # print("Repetidos: ", len(list_repeat))
-                return render_template('results.html', results=results, data_len=len(results), data_repeat=len(list_repeat))
-            else:
-                url = str(request.url).split('/upload')[0]
-                return redirect(url)
-            # if len(files_size) > 0:
-            #     start_time = time.time()
-            #     files = request.files.getlist("files[]")
-            #     results = process_images(files)
-            #     print("Time:  --- %s seconds ---" % round(time.time() - start_time, 2))
-            #     return render_template('results.html', results=results, data_len=len(results))
+            print("Time:  --- %s seconds ---" % round(time.time() - start_time, 2))
+            return render_template('results.html', results=results, data_len=len(results), data_repeat=len(list_repeat))
+            
         else:
             print("Update list results without process")
-            return render_template('results.html', results=results, data_len=len(results))
+            return render_template('results.html', results=results, data_len=len(results), data_repeat=0)
 
 
-@main.route('/files/upload/<filename>')
-def upload_img(filename):
-    return send_from_directory(cfg.GLOBAL.GLOBAL_PATH+'/files/upload', filename)
+@main.route('/files/qr_upload/<filename>')
+def qr_upload(filename):
+    return send_from_directory(str(cfg.GLOBAL.GLOBAL_PATH+'/files/qr_upload'), filename)
 
+@main.route('/files/qr_images/<filename>')
+def qr_images(filename):
+    return send_from_directory(str(cfg.GLOBAL.GLOBAL_PATH+'/files/qr_images'), filename)
 
-# OPTION 3
-# @main.route('/upload', methods=['POST'])
-# def upload():
-#     files = [request.files[file_key] for file_key in request.files]
-#     results = process_images(files)
-#     return jsonify(results)
 
 
 if __name__ == '__main__':

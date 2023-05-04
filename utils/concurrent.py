@@ -65,7 +65,6 @@ def process_image(file, list_bill):
 
     # Procesar el código QR
     data, bill = parse_qr_data(img, measure, path, list_bill)
-    # print("bill:", bill)
 
     # Data OK y Bill No es Repetido
     if len(data)>0:

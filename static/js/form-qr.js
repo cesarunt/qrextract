@@ -91,14 +91,14 @@ function saveVoucher(_this, url, index) {
   var data_igv  = _this.parentNode.parentNode.querySelector('#data_igv')
 
   // Reject if the file input is empty & throw alert
-  if (!data_dat.value)  { alert("Debe ingresar fecha", "warning"); return; }
-  if (!data_cur.value)  { alert("Debe ingresar moneda", "warning"); return; }
-  if (!data_type.value) { alert("Debe ingresar tipo DOC", "warning"); return; }
-  if (!data_bill.value) { alert("Debe ingresar No DOC", "warning"); return; }
-  if (!data_ciaruc.value) { alert("Debe ingresar RUC empresa", "warning"); return; }
-  if (!data_cliruc.value) { alert("Debe ingresar RUC cliente", "warning"); return; }
-  if (!data_tot.value)  { alert("Debe ingresar total", "warning"); return; }
-  if (!data_igv.value)  { alert("Debe ingresar IGV", "warning"); return; }
+  if (!data_dat.value)  { alert("Debe ingresar fecha", "warning"); return false; }
+  if (!data_cur.value)  { alert("Debe ingresar moneda", "warning"); return false; }
+  if (!data_type.value) { alert("Debe ingresar tipo DOC", "warning"); return false; }
+  if (!data_bill.value) { alert("Debe ingresar No DOC", "warning"); return false; }
+  if (!data_ciaruc.value) { alert("Debe ingresar RUC empresa", "warning"); return false; }
+  if (!data_cliruc.value) { alert("Debe ingresar RUC cliente", "warning"); return false; }
+  if (!data_tot.value)  { alert("Debe ingresar total", "warning"); return false; }
+  if (!data_igv.value)  { alert("Debe ingresar IGV", "warning"); return false; }
 
   // Create a new FormData instance
   var data = new FormData();
