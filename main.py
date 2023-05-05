@@ -4,6 +4,7 @@ from utils.concurrent import process_image, getting_text # process_images
 from utils.qr import *
 from utils.config import cfg
 import time, json, os
+import operator
 from werkzeug.utils import secure_filename
 
 main = Flask(__name__)
@@ -38,13 +39,15 @@ def qr():
 def qr_post():
     global results
     action = request.values.get("action")
+
+    # print("action", action)
     
     if action == "save_voucher":
         index = int(request.values.get("index"))-1
         results[index]['cli_dat']  = request.values.get("data_dat")
         results[index]['currency'] = request.values.get("data_cur")
-        results[index]['type']     = request.values.get("data_type")
-        results[index]['cli_fac']  = request.values.get("data_bill")
+        results[index]['type_doc'] = request.values.get("data_type")
+        results[index]['cli_fac']  = str(request.values.get("data_bill")).upper()
         results[index]['cia_ruc']  = request.values.get("data_ciaruc")
         results[index]['cli_ruc']  = request.values.get("data_cliruc")
         results[index]['cli_tot']  = request.values.get("data_tot")
@@ -75,10 +78,10 @@ def qr_post():
                 elif len(data)>0:
                     list_bill.append(data['cli_fac'])
                     results.append(data)
+            results = sorted(results, key=lambda d: d['is_full']) 
 
             print("Time:  --- %s seconds ---" % round(time.time() - start_time, 2))
             return render_template('results.html', results=results, data_len=len(results), data_repeat=len(list_repeat))
-            
         else:
             print("Update list results without process")
             return render_template('results.html', results=results, data_len=len(results), data_repeat=0)

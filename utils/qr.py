@@ -127,6 +127,7 @@ def get_barcodes(barcodeData, list_bill):
     band_ciaruc = False
     band_clitot = False
     band_clifac = False
+    data['is_full'] = 3
     data['type_doc'] = ""
     data['currency'] = "S"
     data['cli_fac'] = ""
@@ -148,7 +149,7 @@ def get_barcodes(barcodeData, list_bill):
                     data['type_doc'] = "F"
                 if code[0]=='B':
                     data['type_doc'] = "B"
-                data['cli_fac'] = code[1:]
+                data['cli_fac'] = code
                 band_clifac = True
                 if data['cli_fac'] in list_bill:
                     repeat = True
@@ -222,13 +223,13 @@ def parse_text_data(text, measure, path, list_bill):
     res_rucs = None
     patterns_cli_igv = ["IGV 18", "I.G.V", "IGV"]
     patterns_cli_tot = ["IMPORTE TOTAL", "TOTAL S" , "TOTAL"]
-    barcode_isok = 0
+    barcode_isok = 3
     data_cia_ruc = ""
+    data_cli_ruc = ""
     data_cli_fac = ""
     data_cli_igv = ""
     data_cli_tot = ""
     data_cli_fec = ""
-    data_cli_ruc = ""
 
     # print("\nTEXT", text)
 
@@ -254,7 +255,6 @@ def parse_text_data(text, measure, path, list_bill):
     if repeat == True:
         bill = data_cli_fac
     else:
-        # repeat == False:
         # FIND RUC
         res_rucs = re.findall("2\d{10,}", text)
         len_ruc = len(res_rucs)    
@@ -301,6 +301,8 @@ def parse_text_data(text, measure, path, list_bill):
         #         break
         
         # IS FULL
+    
+    if (data_cia_ruc != "" or data_cli_ruc != "" or data_cli_fac != "" or data_cli_igv != "" or data_cli_tot != ""):
         barcode_isok = 2
         
     data = {
@@ -312,7 +314,7 @@ def parse_text_data(text, measure, path, list_bill):
             'cli_dat':  data_cli_fec,
             'cli_ruc':  data_cli_ruc,
             'currency': "S",
-            'type_doc': "F",
+            'type_doc': "",
             'measure':   measure['measure'],
             'measure_w': measure['measure_w'],
             'measure_h': measure['measure_h'],

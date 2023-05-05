@@ -49,7 +49,7 @@
                                                 {% if data.is_full == 2 %}
                                                 <span class="badge text-dark" style="background-color:rgb(255, 191, 0) !important; padding: 5px 2px;">[&nbsp;XX%]</span>
                                                 {% endif %}
-                                                {% if data.is_full == 0 %}
+                                                {% if data.is_full == 3 %}
                                                 <span class="badge text-dark" style="background-color:rgb(150, 150, 150) !important; padding: 5px 2px;">[&nbsp;x%]</span>
                                                 {% endif %}
                                             </td>
@@ -116,9 +116,9 @@
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">Fecha</p>
                                                                     {% if data.cli_dat %}
-                                                                    <input type="text" class="form-control" id="data_dat" name="data_dat" value="{{ data.cli_dat }}" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" placeholder="dd/mm/aaaa" id="data_dat" name="data_dat" value="{{ data.cli_dat }}" onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% else %}
-                                                                    <input type="text" class="form-control" id="data_dat" name="data_dat" value="" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" placeholder="dd/mm/aaaa" id="data_dat" name="data_dat" value="" onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% endif %}
                                                                     <div class="valid-feedback">OK!</div>
                                                                     <div class="invalid-feedback">Ingrese fecha</div>
@@ -126,7 +126,7 @@
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">Moneda</p>
                                                                     <select id="data_cur" name="data_cur" class="form-select" required>
-                                                                        <option value="" selected>Seleccione Moneda</option>
+                                                                        <option value="" selected>Seleccione</option>
                                                                         {% if data.currency %}
                                                                             {% if data.currency=="S" %}
                                                                             <option value="S" selected>Sol</option>
@@ -147,20 +147,59 @@
                                                             <div class="row g-2">
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">Tipo DOC</p>
-                                                                    {% if data.type_doc == 'F' %}
-                                                                    <input type="text" class="form-control" id="data_type" name="data_type" value="Factura" onclick="setValueItem(this, '{{loop.index}}')">
-                                                                    {% else %}
-                                                                    <input type="text" class="form-control" id="data_type" name="data_type" value="Boleta" onclick="setValueItem(this, '{{loop.index}}')">
-                                                                    {% endif %}
-                                                                    <div class="valid-feedback">OK!</div>
-                                                                    <div class="invalid-feedback">Ingrese tipo</div>
+                                                                    <select id="data_type" name="data_type" class="form-select" required>
+                                                                        <option value="" selected>Seleccione</option>
+                                                                        {% if data.type_doc %}
+                                                                            {% if data.type_doc=="F" %}
+                                                                            <option value="F" selected>Factura</option>
+                                                                            <option value="B"> Boleta</option>
+                                                                            <option value="NC">Nota Crédito</option>
+                                                                            <option value="ND">Nota Debito</option>
+                                                                            <option value="RH">Recibo x Honarios</option>
+                                                                            {% endif %}
+                                                                            {% if data.type_doc=="B" %}
+                                                                            <option value="F">Factura</option>
+                                                                            <option value="B" selected> Boleta</option>
+                                                                            <option value="NC">Nota Crédito</option>
+                                                                            <option value="ND">Nota Debito</option>
+                                                                            <option value="RH">Recibo x Honarios</option>
+                                                                            {% endif %}
+                                                                            {% if data.type_doc=="NC" %}
+                                                                            <option value="F">Factura</option>
+                                                                            <option value="B"> Boleta</option>
+                                                                            <option value="NC" selected>Nota Crédito</option>
+                                                                            <option value="ND">Nota Debito</option>
+                                                                            <option value="RH">Recibo x Honarios</option>
+                                                                            {% endif %}
+                                                                            {% if data.type_doc=="ND" %}
+                                                                            <option value="F">Factura</option>
+                                                                            <option value="B"> Boleta</option>
+                                                                            <option value="NC">Nota Crédito</option>
+                                                                            <option value="ND" selected>Nota Debito</option>
+                                                                            <option value="RH">Recibo x Honarios</option>
+                                                                            {% endif %}
+                                                                            {% if data.type_doc=="RH" %}
+                                                                            <option value="F">Factura</option>
+                                                                            <option value="B"> Boleta</option>
+                                                                            <option value="NC">Nota Crédito</option>
+                                                                            <option value="ND">Nota Debito</option>
+                                                                            <option value="RH" selected>Recibo x Honarios</option>
+                                                                            {% endif %}
+                                                                        {% else %}
+                                                                            <option value="F">Factura</option>
+                                                                            <option value="B"> Boleta</option>
+                                                                            <option value="NC">Nota Crédito</option>
+                                                                            <option value="ND">Nota Debito</option>
+                                                                            <option value="RH">Recibo x Honarios</option>
+                                                                        {% endif %}
+                                                                    </select>
                                                                 </div>
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">Nro Documento</p>
                                                                     {% if data.cli_fac %}
-                                                                    <input type="text" class="form-control" id="data_bill" name="data_bill" value="{{ data.cli_fac }}" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" maxlength="15" id="data_bill" name="data_bill" value="{{ data.cli_fac }}" onkeypress='validateAlphanumerics(event)' onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% else %}
-                                                                    <input type="text" class="form-control" id="data_bill" name="data_bill" value="" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" maxlength="15" id="data_bill" name="data_bill" value="" onkeypress='validateAlphanumerics(event)' onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% endif %}
                                                                     <div class="valid-feedback">OK!</div>
                                                                     <div class="invalid-feedback">Ingrese factura</div>
@@ -170,9 +209,9 @@
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">RUC Empresa</p>
                                                                     {% if data.cia_ruc %}
-                                                                    <input type="text" class="form-control" id="data_ciaruc" name="data_ciaruc" value="{{ data.cia_ruc }}" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" maxlength="11" id="data_ciaruc" name="data_ciaruc" value="{{ data.cia_ruc }}" onkeypress="validateNumbers(event)" onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% else %}
-                                                                    <input type="text" class="form-control" id="data_ciaruc" name="data_ciaruc" value="" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" maxlength="11" id="data_ciaruc" name="data_ciaruc" value="" onkeypress="validateNumbers(event)" onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% endif %}
                                                                     <div class="valid-feedback">OK!</div>
                                                                     <div class="invalid-feedback">Ingrese ruc</div>
@@ -180,9 +219,9 @@
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">RUC Cliente</p>
                                                                     {% if data.cia_ruc %}
-                                                                    <input type="text" class="form-control" id="data_cliruc" name="data_cliruc" value="{{ data.cli_ruc }}" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" maxlength="11" id="data_cliruc" name="data_cliruc" value="{{ data.cli_ruc }}" onkeypress="validateNumbers(event)" onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% else %}
-                                                                    <input type="text" class="form-control" id="data_cliruc" name="data_cliruc" value="" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" maxlength="11" id="data_cliruc" name="data_cliruc" value="" onkeypress="validateNumbers(event)" onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% endif %}
                                                                     <div class="valid-feedback">OK!</div>
                                                                     <div class="invalid-feedback">Ingrese ruc</div>
@@ -219,7 +258,7 @@
                                                                         {% if data.is_full == 2 %}
                                                                         <span class="badge text-dark" style="border: solid 0.35em #EEE; border-left-color: rgb(255, 191, 0); font-size: medium; font-weight: 300;">  Incompleto X%, faltan pocos items</span>
                                                                         {% endif %}
-                                                                        {% if data.is_full == 0 %}
+                                                                        {% if data.is_full == 3 %}
                                                                         <span class="badge text-dark" style="border: solid 0.35em #EEE; border-left-color: rgb(150, 150, 150); font-size: medium; font-weight: 300;">Incompleto 0%, faltan varios items</span>
                                                                         {% endif %}
                                                                     </p>

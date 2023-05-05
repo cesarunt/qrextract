@@ -91,14 +91,14 @@ function saveVoucher(_this, url, index) {
   var data_igv  = _this.parentNode.parentNode.querySelector('#data_igv')
 
   // Reject if the file input is empty & throw alert
-  if (!data_dat.value)  { alert("Debe ingresar fecha", "warning"); return false; }
-  if (!data_cur.value)  { alert("Debe ingresar moneda", "warning"); return false; }
-  if (!data_type.value) { alert("Debe ingresar tipo DOC", "warning"); return false; }
-  if (!data_bill.value) { alert("Debe ingresar No DOC", "warning"); return false; }
-  if (!data_ciaruc.value) { alert("Debe ingresar RUC empresa", "warning"); return false; }
-  if (!data_cliruc.value) { alert("Debe ingresar RUC cliente", "warning"); return false; }
-  if (!data_tot.value)  { alert("Debe ingresar total", "warning"); return false; }
-  if (!data_igv.value)  { alert("Debe ingresar IGV", "warning"); return false; }
+  if (!data_dat.value)  { alert("Debe ingresar fecha", "warning"); return; }
+  if (!data_cur.value)  { alert("Debe seleccionar moneda", "warning"); return; }
+  if (!data_type.value) { alert("Debe seleccionar tipo Documento", "warning"); return; }
+  if (!data_bill.value) { alert("Debe ingresar No Documento", "warning"); return; }
+  if (!data_ciaruc.value) { alert("Debe ingresar RUC empresa", "warning"); return; }
+  if (!data_cliruc.value) { alert("Debe ingresar RUC cliente", "warning"); return; }
+  if (!data_tot.value)  { alert("Debe ingresar total", "warning"); return; }
+  if (!data_igv.value)  { alert("Debe ingresar IGV", "warning"); return; }
 
   // Create a new FormData instance
   var data = new FormData();
@@ -127,6 +127,7 @@ function saveVoucher(_this, url, index) {
       // showAlertPage('Voucher registrado con éxito', 'success')
       // results = request.response['results']
       alert("Voucher registrado con éxito")
+      location.reload();
     }
     else {
       showAlertPage('Voucher no fue registrado', 'warning')
@@ -222,5 +223,27 @@ function moveVoucher(_this, index, direct) {
     div_canvasClass.height = canvas_height
     div_modal.classList.add("show");
     div_modal.setAttribute("style", `display: block`);
+  }
+}
+
+function validateNumbers(evt) {
+  var theEvent = evt || window.event;
+  var key = theEvent.keyCode || theEvent.which;
+  key = String.fromCharCode( key );
+  var regex = /[0-9]/;
+  if( !regex.test(key) ) {
+    theEvent.returnValue = false;
+    if(theEvent.preventDefault) theEvent.preventDefault();
+  }
+}
+
+function validateAlphanumerics(evt) {
+  var theEvent = evt || window.event;
+  var key = theEvent.keyCode || theEvent.which;
+  key = String.fromCharCode( key );
+  var regex = /[a-zA-Z0-9]|\-/;
+  if( !regex.test(key) ) {
+    theEvent.returnValue = false;
+    if(theEvent.preventDefault) theEvent.preventDefault();
   }
 }
