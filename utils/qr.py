@@ -89,7 +89,7 @@ def save_file(file):
 
 
 def parse_img_data(img):
-    measure = []
+    measure_dict = {}
     
     if int(img.width)>int(img.height):
         measure = "W"
@@ -97,6 +97,7 @@ def parse_img_data(img):
         measure_w = "740px"
         center_w = "0px"
     else:
+        measure = "H"
         fw = float(int(img.height) / int(img.width))
         if fw > 2.0:
             measure_w = "420px"
@@ -111,14 +112,14 @@ def parse_img_data(img):
             measure_h = "900px"
             center_w = "50px"
     
-    measure = {
+    measure_dict = {
                 'measure':   measure,
                 'measure_h': measure_h,
                 'measure_w': measure_w,
                 'center_w':  center_w
             }
 
-    return measure
+    return measure_dict
 
 
 def get_barcodes(barcodeData, list_bill):
@@ -149,6 +150,12 @@ def get_barcodes(barcodeData, list_bill):
                     data['type_doc'] = "F"
                 if code[0]=='B':
                     data['type_doc'] = "B"
+                if code[0:1]=='NC':
+                    data['type_doc'] = "NC"
+                if code[0:1]=='ND':
+                    data['type_doc'] = "ND"
+                if code[0:1]=='RH':
+                    data['type_doc'] = "RH"
                 data['cli_fac'] = code
                 band_clifac = True
                 if data['cli_fac'] in list_bill:
@@ -204,12 +211,6 @@ def parse_qr_data(img, measure, path, list_bill):
         data['path']  = path
         if repeat == True:
             bill = data['cli_fac']
-        # else:
-        #     data['measure']  = measure['measure']
-        #     data['measure_w'] = measure['measure_w']
-        #     data['measure_h'] = measure['measure_h']
-        #     data['center_w'] = measure['center_w']
-        #     data['path']  = path
 
     return data, bill
 
@@ -230,15 +231,13 @@ def parse_text_data(text, measure, path, list_bill):
     data_cli_igv = ""
     data_cli_tot = ""
     data_cli_fec = ""
-
-    # print("\nTEXT", text)
+    data_cli_typ = ""
 
     # FIND BILL NUMBER
     res_bill_1 = re.search("[F,B]\d{3}", text)
     if res_bill_1 != None:
         data_cli_fac = str(text[res_bill_1.start(0):]).split("\n")[0]
         data_cli_fac = data_cli_fac.replace(" ","").replace("]","").replace("[","")
-        # data_cli_fac = res_bill_1[0]
     else:
         match = False
         res_bill_2 = re.search(" A\w{5,15}", text)
@@ -249,8 +248,19 @@ def parse_text_data(text, measure, path, list_bill):
                 data_cli_fac = res_bill_
                 data_cli_fac = data_cli_fac.replace(" ","").replace("]","").replace("[","")
 
-    if data_cli_fac != "" and data_cli_fac in list_bill:
-        repeat = True
+    if data_cli_fac != "":
+        if data_cli_fac[0]=='F':
+            data_cli_typ = "F"
+        if data_cli_fac[0]=='B':
+            data_cli_typ = "B"
+        if data_cli_fac[0:1]=='NC':
+            data_cli_typ = "NC"
+        if data_cli_fac[0:1]=='ND':
+            data_cli_typ = "ND"
+        if data_cli_fac[0:1]=='RH':
+            data_cli_typ = "RH"
+        if data_cli_fac in list_bill:
+            repeat = True
     
     if repeat == True:
         bill = data_cli_fac
@@ -263,14 +273,7 @@ def parse_text_data(text, measure, path, list_bill):
                 data_cia_ruc = res_rucs[0]
             elif len_ruc>1:
                 data_cia_ruc = res_rucs[0]
-                data_cli_ruc = res_rucs[1]
-        # else:
-        #     res_rucs = re.findall(r"RUC2[0-9]+(?:-[0-9]+)", text)
-        #     print(".........res_rucs", res_rucs)
-        #     # input(" .-.-. ")
-        #     if len(res_rucs)>0:
-        #         data_cia_ruc = str(res_rucs[0][3:]).split(" ")[0]
-            
+                data_cli_ruc = res_rucs[1]            
         # FIND TOTAL
         for pattern in patterns_cli_tot :
             patt = re.search(rf"\b{pattern}", text, re.IGNORECASE)
@@ -314,12 +317,12 @@ def parse_text_data(text, measure, path, list_bill):
             'cli_dat':  data_cli_fec,
             'cli_ruc':  data_cli_ruc,
             'currency': "S",
-            'type_doc': "",
+            'type_doc':  data_cli_typ,
             'measure':   measure['measure'],
             'measure_w': measure['measure_w'],
             'measure_h': measure['measure_h'],
             'center_w':  measure['center_w'],
-            'path':     path
+            'path':      path
             }
     
     return data, bill

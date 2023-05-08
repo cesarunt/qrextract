@@ -29,3 +29,4 @@ __C.GLOBAL.UPLOAD_EXTENSIONS = ["PDF", "pdf"]
 __C.GLOBAL.QR_EXTENSIONS    = ["PDF", "pdf", "JPG", "JPEG"]
 __C.GLOBAL.QR_UPLOAD       = GLOBAL_PATH + '/files/qr_upload'
 __C.GLOBAL.QR_IMAGES      = GLOBAL_PATH + '/files/qr_images'
+__C.GLOBAL.QR_IMAGES_WEB  = '/files/qr_images'

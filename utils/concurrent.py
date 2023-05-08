@@ -1,7 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from utils.qr import *
 from utils.config import cfg
-import concurrent.futures
 import pytesseract
 import cv2
 
@@ -38,6 +37,29 @@ def getting_text(path, dictCanvas):
     
     return text_canvas
 
+def rotate_image(path, angle, measure):
+    img_canvas = False
+    path_canvas = ""
+    
+    try:
+        angle = int(angle) - 90
+        img = Image.open(path)
+        img = img.rotate(angle, expand=True)
+        filename = str(path.split("/")[-1]).split(".")[0] + '_rot'+ str(abs(angle)) + '.jpg'
+        path = cfg.GLOBAL.QR_IMAGES + '/' + filename
+        img.save(path)
+        path_canvas = cfg.GLOBAL.QR_IMAGES_WEB + '/' + filename
+        if measure=='H':
+            measure = 'W'
+        else:
+            measure = 'H'
+        img_canvas = True
+    except Exception as e:
+            print(e)
+            print("Error generate text...")
+    
+    return img_canvas, path_canvas, angle, measure
+
 # def process_images(files):
 #     results = []
 #     with ThreadPoolExecutor() as executor:
@@ -59,10 +81,8 @@ def process_image(file, list_bill):
 
     # Guardar el archivo correspondiente IMG o PDF
     img, path = save_file(file)
-    
     # Obtener medidas de la Imagen
     measure = parse_img_data(img)
-
     # Procesar el código QR
     data, bill = parse_qr_data(img, measure, path, list_bill)
 
@@ -70,8 +90,6 @@ def process_image(file, list_bill):
     if len(data)>0:
         return data, bill
     # # Data NULL y Bill es Repetido
-    # if len(data)==0 and bill>0:
-    #     return data, bill
     else:
         # Extraer texto de la imagen
         text = pytesseract.image_to_string(img, lang='spa', config='--dpi 2 --psm 6')

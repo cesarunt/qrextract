@@ -130,17 +130,9 @@ var Rectangle = (function () {
 
 $("canvas").dblclick(function() {
   cleanCanvas();
-  // ctx.clearRect(0, 0, canvas.width, canvas.height);
-//   var objects = canvas.getObjects();
-//   for(var i = 0; i < objects.length; i++){   
-//     canvas.remove(objects[i]);
-//   };
-//   canvas.clear();
-//   dictCanvas = []
 });
 
 function cleanCanvas(canvas) {
-    // console.log("clear ....")
     if (canvas != null){
         var objects = canvas.getObjects();
         for(var i = 0; i < objects.length; i++){   
@@ -153,7 +145,6 @@ function cleanCanvas(canvas) {
 
 // Get a reference to the alert wrapper
 var alert_wrapper = document.getElementById("alert_wrapper");
-
 
 // GET CANVAS
 // --------------------------------------------------------------------------------------------------
@@ -183,7 +174,7 @@ function getTextCanvas(url, index, path) {
     if (request.status == 200) {
         text_canvas = request.response['text_canvas']
         if (select_control == "") {
-            alert(`Debe seleccionar un imtem`, "success");
+            alert(`Debe seleccionar un item`, "success");
         }
         else {
             div_modal = document.getElementById("exampleModal_"+select_index)

@@ -1,11 +1,11 @@
-from flask import Flask, request, render_template, redirect, send_from_directory
+from flask import Flask, request, render_template, send_from_directory
 from flask import jsonify
-from utils.concurrent import process_image, getting_text # process_images
+from utils.concurrent import process_image, getting_text, rotate_image # process_images
 from utils.qr import *
 from utils.config import cfg
 import time, json, os
-import operator
 from werkzeug.utils import secure_filename
+
 
 main = Flask(__name__)
 
@@ -15,32 +15,10 @@ def qr():
     results = []
     return render_template('index.html')
 
-# OPTION 1
-# @main.route('/upload', methods=['POST'])
-# def upload():
-#     files = request.files.getlist("file")
-#     results = []
-#     for file in files:
-#         img = Image.open(file.stream)
-#         # Procesar el código QR
-#         qr_data = decode(img)
-#         if qr_data:
-#             results.append(parse_qr_data(qr_data))
-#         else:
-#             # Extraer texto de la imagen
-#             text = pytesseract.image_to_string(img)
-#             # Buscar datos en el texto
-#             results.append(parse_text_data(text))
-#     return render_template('results.html', results=results)
-
-
-# OPTION 2
 @main.route('/qr', methods=['POST'])
 def qr_post():
     global results
     action = request.values.get("action")
-
-    # print("action", action)
     
     if action == "save_voucher":
         index = int(request.values.get("index"))-1
@@ -63,6 +41,15 @@ def qr_post():
                 return jsonify({'text_canvas': text_canvas})
             else:
                 return jsonify({'text_canvas': "-"})
+    elif action == "rotate_canvas":
+            path_canvas = ""
+            index = int(request.values.get("index"))
+            path = cfg.GLOBAL.GLOBAL_PATH + "/" + request.values.get("path")
+            angle = request.values.get("angle")
+            measure = request.values.get("measure")
+            img_canvas, path_canvas, angle_canvas, measure_canvas = rotate_image(path, angle, measure)
+            if img_canvas==True:
+                return jsonify({'path_canvas': path_canvas, 'angle_canvas': angle_canvas, 'measure_canvas': measure_canvas})
     else:
         if len(results)==0:
             start_time = time.time()
@@ -94,7 +81,6 @@ def qr_upload(filename):
 @main.route('/files/qr_images/<filename>')
 def qr_images(filename):
     return send_from_directory(str(cfg.GLOBAL.GLOBAL_PATH+'/files/qr_images'), filename)
-
 
 
 if __name__ == '__main__':

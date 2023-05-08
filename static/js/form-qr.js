@@ -42,41 +42,127 @@ function clicQRProgress(_this) {
   }
 }
 
-// ACTIVATE ZOOM FUNCTION
+// ZOOM FUNCTION
+var bandZoom = false
 function activeZoom(_this, measure, index) {
-  var close_zoom = _this.parentNode.querySelector('#close_zoom');
+  if (bandZoom == false){
+    div_modal = document.getElementById("exampleModal_"+index)
+    div_image = div_modal.querySelector('#div_image');
+    div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
+    div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
+    div_image.style.border = "2px dotted gray";
+    if (measure=='H'){
+      div_image.classList.add("measure_h");
+    }
+    else {
+      div_image.classList.add("measure_w");
+    }
+    _this.style.opacity = 0.5;
+    bandZoom = true;
+  }
+  else{
+    div_image.style.border = "0";
+    if (measure=='H'){
+      div_image.classList.remove("measure_h");
+      div_canvasId.style.transform = "scale(1.0)";
+      div_canvasClass.style.transform = "scale(1.0)";
+    }
+    else {
+      div_image.classList.remove("measure_w");
+    }
+    _this.style.opacity = 1.0;
+    bandZoom = false;
+  }
+}
+
+// ROTATE FUNCTION
+// --------------------------------------------------------------------------------------------------
+function makeRotate(url, measure, measure_w, measure_h, index, path) {
+  // Create a new FormData instance
+  var data = new FormData();
+  // Create a XMLHTTPRequest instance
+  var request = new XMLHttpRequest();
+  // Set the response type
+  request.responseType = "json";
+  // angle = document.getElementById("angle").value
   div_modal = document.getElementById("exampleModal_"+index)
   div_image = div_modal.querySelector('#div_image');
-  div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
-  div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
-  div_image.style.border = "2px dotted gray";
-  if (measure=='H'){
-    div_image.classList.add("measure_h");
-  }
-  else {
-    div_image.classList.add("measure_w");
-  }
-  close_zoom.style.opacity = 1.0;
-  close_zoom.disabled = false
-  _this.disabled = true
+  div_measure = div_modal.querySelector('#measure');
+  div_angle = div_modal.querySelector('#angle');
+
+  var path_canvas = ""
+  var action = "rotate_canvas";
+  data.append("action", action);
+  data.append("index", index);
+  data.append("path", path);
+  data.append("measure", div_measure.value);
+  data.append("angle", div_angle.value);
+
+  // request load handler (transfer complete)
+  request.addEventListener("load", function (e) {
+    if (request.status == 200) {
+      path_canvas = request.response['path_canvas']
+      angle_canvas = request.response['angle_canvas']
+      measure_canvas = request.response['measure_canvas']
+      div_angle.value = angle_canvas
+      div_measure.value = measure_canvas
+      div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
+      div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
+      
+      if (measure_canvas=='W'){
+        div_canvasId.style.width = "740px";
+        div_canvasClass.style.width = "740px";
+        div_canvasId.style.height = "500px";
+        div_canvasClass.style.height = "500px";
+        div_canvasId.style.left = "0px";
+        div_canvasClass.style.left = "0px";
+        div_canvasId.parentNode.style.height = "500px"
+      }
+      else {
+        div_canvasId.style.height = measure_h;
+        div_canvasClass.style.height = measure_h;
+        div_canvasId.style.width = measure_w;
+        div_canvasClass.style.width = measure_w;
+        div_canvasId.style.left = "0px";
+        div_canvasClass.style.left = "0px";
+        div_canvasId.parentNode.style.height = "900px"
+      }
+      // div_canvasId.style.backgroundImage = `url('${path_canvas}')`;
+      // div_canvasClass.style.backgroundImage = `url('${path_canvas}')`;
+      $(div_canvasId).css({ 'background-image': 'url(' + path_canvas + ')', 'background-repeat': 'no-repeat', 'background-size': 'cover' });
+      $(div_canvasClass).css({ 'background-image': 'url(' + path_canvas + ')', 'background-repeat': 'no-repeat', 'background-size': 'cover' });      
+    }
+    else {
+        console.log('Canvas no fue actualizado')
+    }    
+  });
+
+  // request error handler
+  request.addEventListener("error", function (e) {
+    alert(`Error procesando la imagen`, "danger");
+  });
+
+  // Open and send the request
+  request.open("POST", url);
+  request.send(data);
 }
 
 // DEACTIVATE ZOOM FUNCTION
-function closeZoom(_this, measure) {
-  var btn_zoom = _this.parentNode.querySelector('#btn_zoom');
-  div_image.style.border = "0";
-  if (measure=='H'){
-    div_image.classList.remove("measure_h");
-    div_canvasId.style.transform = "scale(1.0)";
-    div_canvasClass.style.transform = "scale(1.0)";
-  }
-  else {
-    div_image.classList.remove("measure_w");
-  }
-  btn_zoom.disabled = false
-  _this.disabled = true
-  _this.style.opacity = 0.5;
-}
+// function closeZoom(_this, measure) {
+//   var btn_zoom = _this.parentNode.querySelector('#btn_zoom');
+//   div_image.style.border = "0";
+//   if (measure=='H'){
+//     div_image.classList.remove("measure_h");
+//     div_canvasId.style.transform = "scale(1.0)";
+//     div_canvasClass.style.transform = "scale(1.0)";
+//   }
+//   else {
+//     div_image.classList.remove("measure_w");
+//   }
+//   btn_zoom.disabled = false
+//   _this.disabled = true
+//   _this.style.opacity = 0.5;
+// }
 
 // --------------------------------------------------------------------------------------------------------
 function saveVoucher(_this, url, index) {
@@ -168,7 +254,6 @@ function openVoucher(_this, index, data_len, center_w) {
   canvas = new fabric.Canvas(div_canvasId);
   arrow = new Rectangle(canvas);
   ctx = canvas.getContext("2d");
-  // div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
   div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
   div_canvasId.style.left = center_w
   div_canvasId.width = canvas_width

@@ -81,6 +81,8 @@
                                                             </div>
                                                         </div>
                                                         {% endif %}
+                                                        <input type="hidden" name="measure" id="measure" value='{{ data.measure }}' />
+                                                        <input type="hidden" name="angle" id="angle" value="0" />
                                                         <div class="mb-4" id="div_items" style="margin: 1.5rem 0.5rem 0 1rem; width: 40%;">
                                                             <div class="row g-2">
                                                                 <div class="col-md-6 text-left" style="margin: 1rem 0 0">
@@ -96,19 +98,20 @@
                                                                 </div>
                                                             </div>
                                                             <div class="line" style="text-align: left; width: 99%; margin: 0.25rem 0 0.75rem; border-color: #999;"></div>
-                                                            <div class="row g-2" style="margin: 0 0 0.75rem;">
-                                                                <div class="col-md-6" style="text-align: left;">
+                                                            <div class="row g-3" style="margin: 0 0 0.75rem;">
+                                                                <div class="col-md-4" style="text-align: center; padding-left: 0;">
                                                                     <button id="btn_zoom" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="activeZoom(this, '{{data.measure}}', '{{loop.index}}')">
-                                                                        <i class="fas fa-search-plus"><span> &nbsp;Zoom</span></i>
-                                                                    </button>
-                                                                    <button type="button" id="close_zoom" style="width: 25px; opacity: 0.25;" class="btn btn-icon icon-left btn-secondary mb-2" onclick="closeZoom(this, '{{data.measure}}')" disabled>
-                                                                        <span class="fa-fw select-all fas" style="margin: 0 -8px;"></span>
+                                                                        <i class="fas fa-search-plus"><span> Zoom</span></i>
                                                                     </button>
                                                                 </div>
-                                                                <div class="col-md-6" style="text-align: center;">
-                                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                <div class="col-md-4" style="text-align: center; padding-left: 12px;">
+                                                                    <button id="btn_rotate" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="makeRotate('{{ request.url }}', '{{data.measure}}', '{{data.measure_w}}', '{{data.measure_h}}', '{{loop.index}}', '{{data.path}}')">
+                                                                        <i class="fas fa-redo-alt"><span> Rotar</span></i>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col-md-4" style="text-align: center; padding-right: 0;">
                                                                     <button id="btn_extract" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="getTextCanvas('{{ request.url }}', '{{loop.index}}', '{{data.path}}')">
-                                                                        <i class="fas fa-sort-alpha-down"><span> &nbsp;Text&nbsp;</span></i>
+                                                                        <i class="fas fa-sort-alpha-down"><span> Texto</span></i>
                                                                     </button>
                                                                 </div>
                                                             </div>
