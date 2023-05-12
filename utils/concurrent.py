@@ -37,7 +37,7 @@ def getting_text(path, dictCanvas):
     
     return text_canvas
 
-def rotate_image(path, angle, measure):
+def rotate_image(path, angle, measure_current, measure_w, measure_h):
     img_canvas = False
     path_canvas = ""
     
@@ -49,16 +49,35 @@ def rotate_image(path, angle, measure):
         path = cfg.GLOBAL.QR_IMAGES + '/' + filename
         img.save(path)
         path_canvas = cfg.GLOBAL.QR_IMAGES_WEB + '/' + filename
-        if measure=='H':
-            measure = 'W'
+        measure_w = int(str(measure_w).split("px")[0])
+        measure_h = int(str(measure_h).split("px")[0])
+        print('measure_w', measure_w)
+        print('measure_h', measure_h)
+
+        if measure_current=='H':
+            measure = "W"
+            if measure_w > measure_h:
+                measure_width = measure_w
+                measure_height = measure_h
+            else:
+                measure_width = measure_h
+                measure_height = measure_w
         else:
             measure = 'H'
+            if measure_w > measure_h:
+                measure_width = measure_h
+                measure_height = measure_w
+            else:
+                measure_width = measure_w
+                measure_height = measure_h
+
         img_canvas = True
     except Exception as e:
             print(e)
             print("Error generate text...")
     
-    return img_canvas, path_canvas, angle, measure
+    return img_canvas, path_canvas, angle, measure, measure_width, measure_height
+
 
 # def process_images(files):
 #     results = []

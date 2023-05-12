@@ -24,7 +24,7 @@
                                             <th>TIPO<br>Doc</th>
                                             <th>NUMERO<br>Doc</th>
                                             <th>RUC Empresa</th>
-                                            <th>RUC Cliente</th>
+                                            <!-- <th>RUC Cliente</th> -->
                                             <th style="text-align: center;">TOTAL<br>(S/ $)</th>
                                             <th style="text-align: center;">IGV<br>(18%)</th>
                                             <th>Estado<br>&nbsp;&nbsp;(%)</th>
@@ -39,7 +39,7 @@
                                             <td style="text-align: center;">{{data.type_doc}}</td>
                                             <td>{{data.cli_fac}}</td>
                                             <td>{{data.cia_ruc}}</td>
-                                            <td>{{data.cli_ruc}}</td>
+                                            <!-- <td>{{data.cli_ruc}}</td> -->
                                             <td style="text-align: center;">{{data.cli_tot}}</td>
                                             <td style="text-align: center;">{{data.cli_igv}}</td>
                                             <td>
@@ -61,8 +61,8 @@
                                         </tr>
                                         <!-- Modal -->
                                         <div class="modal fade" id="exampleModal_{{loop.index}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog" role="document" style="max-width: 1100px;">
-                                                <div class="modal-content" style="background-color: #EEE; width: 1100px;">
+                                            <div class="modal-dialog" role="document" style="max-width: 1180px;">
+                                                <div class="modal-content" style="background-color: #EEE; width: 1180px;">
                                                     <div class="modal-body" style="display: inline-flex; top: 5px;">                                                        
                                                         {% if data.measure == 'H' %}
                                                         <div class="mb-6 text-center" id="div_image" style="margin: 0.5rem 0 0 0; width: 99% !important;">

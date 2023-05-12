@@ -17,6 +17,7 @@ def qr():
 
 @main.route('/qr', methods=['POST'])
 def qr_post():
+    global list_repeat
     global results
     action = request.values.get("action")
     
@@ -46,10 +47,19 @@ def qr_post():
             index = int(request.values.get("index"))
             path = cfg.GLOBAL.GLOBAL_PATH + "/" + request.values.get("path")
             angle = request.values.get("angle")
-            measure = request.values.get("measure")
-            img_canvas, path_canvas, angle_canvas, measure_canvas = rotate_image(path, angle, measure)
+            # measure = request.values.get("measure")
+            # measure_initial = request.values.get("measure_initial")
+            measure_current = request.values.get("measure_current")
+            measure_w = request.values.get("measure_w")
+            measure_h = request.values.get("measure_h")
+            img_canvas, path_canvas, angle_canvas, measure_canvas, measure_width, measure_height = rotate_image(path, angle, measure_current, measure_w, measure_h)
             if img_canvas==True:
-                return jsonify({'path_canvas': path_canvas, 'angle_canvas': angle_canvas, 'measure_canvas': measure_canvas})
+                return jsonify({'path_canvas': path_canvas, 
+                                'angle_canvas': angle_canvas, 
+                                'measure_canvas': measure_canvas,
+                                'measure_width': measure_width,
+                                'measure_height': measure_height
+                                })
     else:
         if len(results)==0:
             start_time = time.time()
@@ -71,7 +81,7 @@ def qr_post():
             return render_template('results.html', results=results, data_len=len(results), data_repeat=len(list_repeat))
         else:
             print("Update list results without process")
-            return render_template('results.html', results=results, data_len=len(results), data_repeat=0)
+            return render_template('results.html', results=results, data_len=len(results), data_repeat=len(list_repeat))
 
 
 @main.route('/files/qr_upload/<filename>')

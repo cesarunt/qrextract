@@ -76,6 +76,7 @@ function activeZoom(_this, measure, index) {
 }
 
 // ROTATE FUNCTION
+var initWH = ""
 // --------------------------------------------------------------------------------------------------
 function makeRotate(url, measure, measure_w, measure_h, index, path) {
   // Create a new FormData instance
@@ -84,18 +85,25 @@ function makeRotate(url, measure, measure_w, measure_h, index, path) {
   var request = new XMLHttpRequest();
   // Set the response type
   request.responseType = "json";
-  // angle = document.getElementById("angle").value
   div_modal = document.getElementById("exampleModal_"+index)
   div_image = div_modal.querySelector('#div_image');
   div_measure = div_modal.querySelector('#measure');
   div_angle = div_modal.querySelector('#angle');
 
+  console.log("Measure Initial", measure)
+  console.log("Measure Current", div_measure.value)
+
   var path_canvas = ""
+  // var measure_width = ""
+  // var measure_height = ""
   var action = "rotate_canvas";
   data.append("action", action);
   data.append("index", index);
   data.append("path", path);
-  data.append("measure", div_measure.value);
+  // data.append("measure_initial", measure);
+  data.append("measure_current", div_measure.value);
+  data.append("measure_w", measure_w);
+  data.append("measure_h", measure_h);
   data.append("angle", div_angle.value);
 
   // request load handler (transfer complete)
@@ -104,28 +112,37 @@ function makeRotate(url, measure, measure_w, measure_h, index, path) {
       path_canvas = request.response['path_canvas']
       angle_canvas = request.response['angle_canvas']
       measure_canvas = request.response['measure_canvas']
+      measure_width = request.response['measure_width']
+      measure_height = request.response['measure_height']
+
       div_angle.value = angle_canvas
       div_measure.value = measure_canvas
       div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
       div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
-      
+      // console.log("Angle", angle_canvas)
+      // console.log("Measure", measure_canvas)
+      // console.log("Width", measure_width)
+      // console.log("Height", measure_height)
+      measure_width = measure_width.toString() + "px"
+      measure_height = measure_height.toString() + "px"
+
       if (measure_canvas=='W'){
-        div_canvasId.style.width = "740px";
-        div_canvasClass.style.width = "740px";
-        div_canvasId.style.height = "500px";
-        div_canvasClass.style.height = "500px";
+        div_canvasId.style.width = measure_width;
+        div_canvasClass.style.width = measure_width;
+        div_canvasId.style.height = measure_height;
+        div_canvasClass.style.height = measure_height;
         div_canvasId.style.left = "0px";
         div_canvasClass.style.left = "0px";
         div_canvasId.parentNode.style.height = "500px"
       }
       else {
-        div_canvasId.style.height = measure_h;
-        div_canvasClass.style.height = measure_h;
-        div_canvasId.style.width = measure_w;
-        div_canvasClass.style.width = measure_w;
+        div_canvasId.style.height = measure_height;
+        div_canvasClass.style.height = measure_height;
+        div_canvasId.style.width = measure_width;
+        div_canvasClass.style.width = measure_width;
         div_canvasId.style.left = "0px";
         div_canvasClass.style.left = "0px";
-        div_canvasId.parentNode.style.height = "900px"
+        div_canvasId.parentNode.style.height = "800px"
       }
       // div_canvasId.style.backgroundImage = `url('${path_canvas}')`;
       // div_canvasClass.style.backgroundImage = `url('${path_canvas}')`;
@@ -266,10 +283,9 @@ function openVoucher(_this, index, data_len, center_w) {
 // ACTION in order to CLOSE voucher details
 function closeVoucher(index) {
   document.getElementById("exampleModal_"+index).classList.remove("show");
-  document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
-  const elements = document.getElementsByClassName("modal-backdrop");
+  // document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
+  elements = document.getElementsByClassName("modal-backdrop");
   while (elements.length > 0) elements[0].remove();
-  location.reload();
 }
 
 // ACTION in order to MOVE voucher down & up
@@ -298,7 +314,7 @@ function moveVoucher(_this, index, direct) {
     arrow = new Rectangle(canvas);
     ctx = canvas.getContext("2d");
     div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
-    center_width = (740 - canvas_width) / 2
+    center_width = (800 - canvas_width) / 2
     console.log(center_width)
     div_canvasId.style.left = center_width + "px"
     div_canvasId.width = canvas_width

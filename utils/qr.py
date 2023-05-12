@@ -52,25 +52,25 @@ def save_file(file):
         image_height = 0
 
         if int(img.width)>int(img.height):
-            image_height = 500
-            image_width = 740
+            image_height = 540
+            image_width = 800
         else:
             file_width  = img.width
             file_height = img.height
             fw = float(int(file_height) / int(file_width))
             if fw > 2.0:
-                image_width = 420
-                image_height = 900
+                image_width = 400
+                image_height = 800
             elif fw > 1.75:
-                image_width = 480
-                image_height = 900
+                image_width = 460
+                image_height = 800
             else:
-                image_width = 640
-                image_height = 900
+                image_width = 580
+                image_height = 800
         # SAVE and ready to read by QR
         path = os.path.join(cfg.GLOBAL.GLOBAL_PATH + '/files/qr_images', filename)
         img = img.resize((image_width, image_height), Image.ANTIALIAS)
-        img.save(path)
+        img.save(path, 'JPEG', quality=90)
         path = os.path.join('files/qr_images', filename)
     elif (file_ext.upper()=='PDF'):
         path = os.path.join(cfg.GLOBAL.GLOBAL_PATH + '/files/qr_upload', filename)
@@ -93,24 +93,24 @@ def parse_img_data(img):
     
     if int(img.width)>int(img.height):
         measure = "W"
-        measure_h = "500px"
-        measure_w = "740px"
+        measure_h = "540px"
+        measure_w = "800px"
         center_w = "0px"
     else:
         measure = "H"
         fw = float(int(img.height) / int(img.width))
         if fw > 2.0:
-            measure_w = "420px"
-            measure_h = "900px"
-            center_w = "160px"
+            measure_w = "400px"
+            measure_h = "800px"
+            center_w = "200px"
         elif fw > 1.75:
-            measure_w = "480px"
-            measure_h = "900px"
-            center_w = "130px"
+            measure_w = "460px"
+            measure_h = "800px"
+            center_w = "170px"
         else:
-            measure_w = "640px"
-            measure_h = "900px"
-            center_w = "50px"
+            measure_w = "580px"
+            measure_h = "800px"
+            center_w = "110px"
     
     measure_dict = {
                 'measure':   measure,
