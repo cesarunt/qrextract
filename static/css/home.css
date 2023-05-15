@@ -59,30 +59,73 @@
 }
 
 /* QR css */
-.measure_h {
-    /* height: 920px !important; */
+.measure_hUp {
     overflow: hidden;
     margin: 0 auto;
 }
-
-.measure_h canvas {
+.measure_hUp canvas {
     width: 100%;
     transition: 0.5s all ease-in-out;
 }
-.measure_h:hover canvas{
-    transform: scale(1.75) translate(0px, -10px);
+.measure_hUp:hover canvas{
+    transform: scale(1.75) translate(0px, -140px);
 }
 
-.measure_w {
-    width: 720px !important;
+.measure_hDw {
     overflow: hidden;
     margin: 0 auto;
 }
-
-.measure_w canvas {
+.measure_hDw canvas {
     width: 100%;
     transition: 0.5s all ease-in-out;
 }
-.measure_w:hover canvas{
-    transform: scale(1.75) translate(0px, -10px);
+.measure_hDw:hover canvas{
+    transform: scale(1.75) translate(0px, 140px);
+}
+
+
+.measure_wLT {
+    overflow: hidden;
+    margin: 0 auto;
+}
+.measure_wLT canvas {
+    width: 100%;
+    transition: 0.5s all ease-in-out;
+}
+.measure_wLT:hover canvas{
+    transform: scale(1.75) translate(140px, -70px);
+}
+.measure_wLD {
+    overflow: hidden;
+    margin: 0 auto;
+}
+.measure_wLD canvas {
+    width: 100%;
+    transition: 0.5s all ease-in-out;
+}
+.measure_wLD:hover canvas{
+    transform: scale(1.75) translate(140px, 70px);
+}
+
+.measure_wRT {
+    overflow: hidden;
+    margin: 0 auto;
+}
+.measure_wRT canvas {
+    width: 100%;
+    transition: 0.5s all ease-in-out;
+}
+.measure_wRT:hover canvas{
+    transform: scale(1.75) translate(-140px, -70px);
+}
+.measure_wRD {
+    overflow: hidden;
+    margin: 0 auto;
+}
+.measure_wRD canvas {
+    width: 100%;
+    transition: 0.5s all ease-in-out;
+}
+.measure_wRD:hover canvas{
+    transform: scale(1.75) translate(-140px, 70px);
 }

@@ -33,16 +33,16 @@
                                     </thead>
                                     <tbody>
                                         {% for data in results %}
-                                        <tr style="border-bottom: 1px solid #CCC;">
-                                            <td style="text-align: center;">{{ loop.index }}</td>
-                                            <td>{{data.cli_dat}}</td>
-                                            <td style="text-align: center;">{{data.type_doc}}</td>
-                                            <td>{{data.cli_fac}}</td>
-                                            <td>{{data.cia_ruc}}</td>
+                                        <tr id="voucher_{{loop.index}}" style="border-bottom: 1px solid #CCC;">
+                                            <td id="index" style="text-align: center;">{{ loop.index }}</td>
+                                            <td id="date">{{data.cli_dat}}</td>
+                                            <td id="doc_type" style="text-align: center;">{{data.type_doc}}</td>
+                                            <td id="doc_number">{{data.cli_fac}}</td>
+                                            <td id="ruc_cia">{{data.cia_ruc}}</td>
                                             <!-- <td>{{data.cli_ruc}}</td> -->
-                                            <td style="text-align: center;">{{data.cli_tot}}</td>
-                                            <td style="text-align: center;">{{data.cli_igv}}</td>
-                                            <td>
+                                            <td id="total" style="text-align: center;">{{data.cli_tot}}</td>
+                                            <td id="igv" style="text-align: center;">{{data.cli_igv}}</td>
+                                            <td id="state">
                                                 {% if data.is_full == 1 %}
                                                 <span class="badge text-dark" style="background-color:rgb(0, 205, 0) !important; padding: 5px 2px;">[100%]</span>
                                                 {% endif %}
@@ -65,11 +65,13 @@
                                                 <div class="modal-content" style="background-color: #EEE; width: 1180px;">
                                                     <div class="modal-body" style="display: inline-flex; top: 5px;">                                                        
                                                         {% if data.measure == 'H' %}
-                                                        <div class="mb-6 text-center" id="div_image" style="margin: 0.5rem 0 0 0; width: 99% !important;">
+                                                        <div class="mb-6 text-center measure" id="div_image" style="margin: 0.5rem 0 0 0; width: 99% !important;">
                                                             <div id="canvasContainer" style="width: 100%; height: auto; margin: 0;">
-                                                                <div id="canvasContainer" class="text-center" style="width: 100%;">
+                                                                <div id="canvasContainer" class="text-center image-container" style="width: 100%;">
                                                                     <canvas id="canvas" style="background-image: url('{{ data.path }}'); background-size: cover; position: relative; opacity: 0.95; margin: 0 auto; height: '{{ data.measure_h }}' !important; width: '{{ data.measure_w }}'; left: '{{ data.center_w }}';" width='{{ data.measure_w }}' height='{{ data.measure_h }}' left='{{ data.center_w }}'></canvas>
                                                                 </div>
+                                                                <div id="mouse-overlay"></div>
+                                                                <div id="overlay"></div>
                                                             </div>
                                                         </div>
                                                         {% else %}

@@ -20,10 +20,28 @@ function showAlertPage(message, alert) {
       <small>${message}</small>
     </div>
   `
-  setTimeout(function () {
-    // Closing the alert
+  etTimeout(function () {
     $('#alert_page').alert('close');
   }, 5000);
+}
+
+function updateVoucher(index, data_dat, data_type, data_bill, data_ciaruc, data_tot, data_igv) {
+  div_item = document.getElementById("voucher_"+index)
+  // Set green color by 5 seconds
+  setTimeout(function () {
+    div_item.classList.add("alert-success")
+  }, 1000);
+  setTimeout(function () {
+    div_item.classList.remove("alert-success")
+  }, 6000);
+  //  Pass values on the item
+  div_item.querySelector('#date').innerHTML=data_dat;
+  div_item.querySelector('#doc_type').innerHTML=data_type;
+  div_item.querySelector('#doc_number').innerHTML=data_bill;
+  div_item.querySelector('#ruc_cia').innerHTML=data_ciaruc;
+  div_item.querySelector('#total').innerHTML=data_tot;
+  div_item.querySelector('#igv').innerHTML=data_igv;
+  div_item.querySelector('#state').innerHTML='<span class="badge text-dark" style="background-color:rgb(0, 205, 0) !important; padding: 5px 2px;">[100%]</span>'
 }
 
 // Function to Show Progress QR
@@ -44,32 +62,81 @@ function clicQRProgress(_this) {
 
 // ZOOM FUNCTION
 var bandZoom = false
+var measure_last = "measure"
 function activeZoom(_this, measure, index) {
+  if (div_image){
+    div_image.classList.remove(measure_last);
+  }
+
   if (bandZoom == false){
+    console.log("band false")
     div_modal = document.getElementById("exampleModal_"+index)
     div_image = div_modal.querySelector('#div_image');
+    div_rotate = div_modal.querySelector('#div_items').querySelector("#btn_rotate")
+    div_measure = div_modal.querySelector('#measure');
     div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
     div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
     div_image.style.border = "2px dotted gray";
-    if (measure=='H'){
-      div_image.classList.add("measure_h");
+
+    var points
+    var pointX
+    var pointY
+    div_canvasClass.onclick = function(event) {
+      points = event.target.getBoundingClientRect();
+      pointX = event.clientX - points.left; //x position within the element.
+      pointY = event.clientY - points.top;  //y position within the element.
+      console.log("Measure:", div_measure.value)
+      console.log("X: " + pointX + "  Y: " + pointY);
+
+      if (div_measure.value=='H'){
+        if (pointY>400){
+          div_image.classList.add("measure_hUp");
+          measure_last = "measure_hUp"
+        }
+        else{
+          div_image.classList.add("measure_hDw");
+          measure_last = "measure_hDw"
+        }
+      }
+      else {
+        if (pointX>400){
+          if (pointY>200){
+            div_image.classList.add("measure_wRT");
+            measure_last = "measure_wRT"
+          }
+          else{
+            div_image.classList.add("measure_wRD");
+            measure_last = "measure_wRD"
+          }
+        }
+        else{
+          if (pointY>200){
+            div_image.classList.add("measure_wLT");
+            measure_last = "measure_wLT"
+          }
+          else{
+            div_image.classList.add("measure_wLD");
+            measure_last = "measure_wLD"
+          }
+        }
+      }
+      _this.style.opacity = 0.5;
+      div_rotate.disabled = true
+      bandZoom = true;
     }
-    else {
-      div_image.classList.add("measure_w");
-    }
-    _this.style.opacity = 0.5;
-    bandZoom = true;
+
   }
   else{
+    console.log("band true")
     div_image.style.border = "0";
-    if (measure=='H'){
-      div_image.classList.remove("measure_h");
-      div_canvasId.style.transform = "scale(1.0)";
-      div_canvasClass.style.transform = "scale(1.0)";
-    }
-    else {
-      div_image.classList.remove("measure_w");
-    }
+    div_image.classList.remove(measure_last);
+    div_rotate.disabled = false
+    // if (measure=='H'){
+    //   div_image.classList.remove(measure_last);
+    // }
+    // else {
+    //   div_image.classList.remove("measure_w");
+    // }
     _this.style.opacity = 1.0;
     bandZoom = false;
   }
@@ -140,8 +207,8 @@ function makeRotate(url, measure, measure_w, measure_h, index, path) {
         div_canvasClass.style.height = measure_height;
         div_canvasId.style.width = measure_width;
         div_canvasClass.style.width = measure_width;
-        div_canvasId.style.left = "0px";
-        div_canvasClass.style.left = "0px";
+        div_canvasId.style.left = "170px";
+        div_canvasClass.style.left = "170px";
         div_canvasId.parentNode.style.height = "800px"
       }
       // div_canvasId.style.backgroundImage = `url('${path_canvas}')`;
@@ -230,7 +297,9 @@ function saveVoucher(_this, url, index) {
       // showAlertPage('Voucher registrado con éxito', 'success')
       // results = request.response['results']
       alert("Voucher registrado con éxito")
-      location.reload();
+      closeVoucher(index)
+      updateVoucher(index, data_dat.value, data_type.value, data_bill.value, data_ciaruc.value, data_tot.value, data_igv.value)
+      // location.reload();
     }
     else {
       showAlertPage('Voucher no fue registrado', 'warning')
