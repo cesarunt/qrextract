@@ -19,6 +19,9 @@ def qr():
 def qr_post():
     global list_repeat
     global results
+    global path_canvas
+    global measure_canvas
+    path_canvas = ""
     action = request.values.get("action")
     
     if action == "save_voucher":
@@ -32,6 +35,9 @@ def qr_post():
         results[index]['cli_tot']  = request.values.get("data_tot")
         results[index]['cli_igv']  = request.values.get("data_igv")
         results[index]['is_full']  = 1
+        if path_canvas!="":
+            results[index]['path']     = path_canvas
+            results[index]['measure']  = measure_canvas
         return render_template('results.html', results=results, data_len=len(results), data_repeat=0)
     elif action == "get_canvas":
             index = int(request.values.get("index"))
@@ -44,11 +50,10 @@ def qr_post():
                 return jsonify({'text_canvas': "-"})
     elif action == "rotate_canvas":
             path_canvas = ""
+            measure_canvas = ""
             index = int(request.values.get("index"))
             path = cfg.GLOBAL.GLOBAL_PATH + "/" + request.values.get("path")
             angle = request.values.get("angle")
-            # measure = request.values.get("measure")
-            # measure_initial = request.values.get("measure_initial")
             measure_current = request.values.get("measure_current")
             measure_w = request.values.get("measure_w")
             measure_h = request.values.get("measure_h")
@@ -60,6 +65,35 @@ def qr_post():
                                 'measure_width': measure_width,
                                 'measure_height': measure_height
                                 })
+    elif action == "scan_voucher":
+        # Format the path of Image
+        path = cfg.GLOBAL.GLOBAL_PATH + request.values.get("path")
+        print("path", path)
+        img = Image.open(path)
+        measure_current = request.values.get("measure_current")
+        list_bill = []
+        # Processs QR code
+        measure = {
+                    'measure':   measure_current,
+                    'measure_h': 0,
+                    'measure_w': 0,
+                    'center_w':  0
+                }
+        data, _ = parse_qr_data(img, measure, path, list_bill)
+        print("len data", len(data))
+        print("len data", int(len(data)))
+        if int(len(data))==0:
+            return jsonify({'data_scan': "None"})
+        else:
+            return jsonify({'data_dat':     data['cli_dat'], 
+                            'data_type':    data['type_doc'], 
+                            'data_bill':    data['cli_fac'],
+                            'data_ciaruc':  data['cia_ruc'],
+                            'data_cliruc':  data['cli_ruc'],
+                            'data_tot':     data['cli_tot'],
+                            'data_igv':     data['cli_igv']
+                            })
+            
     else:
         if len(results)==0:
             start_time = time.time()

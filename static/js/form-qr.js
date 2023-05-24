@@ -2,12 +2,10 @@
 _index = 0
 // Length of data
 _data_len = 0
-// width and height
 var div_image
 var div_canvasClass
 var canvas_width
 var canvas_height
-var canvas_center
 var select_control
 var inputFiles = document.getElementById("files");
 var alert_wrapper = document.getElementById("alert_wrapper");
@@ -29,10 +27,10 @@ function updateVoucher(index, data_dat, data_type, data_bill, data_ciaruc, data_
   div_item = document.getElementById("voucher_"+index)
   // Set green color by 5 seconds
   setTimeout(function () {
-    div_item.classList.add("alert-success")
+    div_item.style.backgroundColor = "#d4edda"
   }, 1000);
   setTimeout(function () {
-    div_item.classList.remove("alert-success")
+    div_item.style.backgroundColor = ""
   }, 6000);
   //  Pass values on the item
   div_item.querySelector('#date').innerHTML=data_dat;
@@ -63,20 +61,19 @@ function clicQRProgress(_this) {
 // ZOOM FUNCTION
 var bandZoom = false
 var measure_last = "measure"
-function activeZoom(_this, measure, index) {
+function activeZoom(_this, index) {
   if (div_image){
     div_image.classList.remove(measure_last);
   }
 
   if (bandZoom == false){
-    console.log("band false")
     div_modal = document.getElementById("exampleModal_"+index)
     div_image = div_modal.querySelector('#div_image');
     div_rotate = div_modal.querySelector('#div_items').querySelector("#btn_rotate")
     div_measure = div_modal.querySelector('#measure');
     div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
     div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
-    div_image.style.border = "2px dotted gray";
+    div_image.style.border = "2px dotted #00C";
 
     var points
     var pointX
@@ -85,8 +82,7 @@ function activeZoom(_this, measure, index) {
       points = event.target.getBoundingClientRect();
       pointX = event.clientX - points.left; //x position within the element.
       pointY = event.clientY - points.top;  //y position within the element.
-      console.log("Measure:", div_measure.value)
-      console.log("X: " + pointX + "  Y: " + pointY);
+      // console.log("X: " + pointX + "  Y: " + pointY);
 
       if (div_measure.value=='H'){
         if (pointY>400){
@@ -120,30 +116,22 @@ function activeZoom(_this, measure, index) {
           }
         }
       }
-      _this.style.opacity = 0.5;
+      _this.style.border = '2px dotted #00C'
       div_rotate.disabled = true
       bandZoom = true;
     }
-
   }
   else{
-    console.log("band true")
     div_image.style.border = "0";
     div_image.classList.remove(measure_last);
     div_rotate.disabled = false
-    // if (measure=='H'){
-    //   div_image.classList.remove(measure_last);
-    // }
-    // else {
-    //   div_image.classList.remove("measure_w");
-    // }
-    _this.style.opacity = 1.0;
+    _this.style.border = '1px solid #17A2B8'
     bandZoom = false;
   }
 }
 
 // ROTATE FUNCTION
-var initWH = ""
+var path_canvas
 // --------------------------------------------------------------------------------------------------
 function makeRotate(url, measure, measure_w, measure_h, index, path) {
   // Create a new FormData instance
@@ -157,17 +145,11 @@ function makeRotate(url, measure, measure_w, measure_h, index, path) {
   div_measure = div_modal.querySelector('#measure');
   div_angle = div_modal.querySelector('#angle');
 
-  console.log("Measure Initial", measure)
-  console.log("Measure Current", div_measure.value)
-
-  var path_canvas = ""
-  // var measure_width = ""
-  // var measure_height = ""
+  path_canvas = ""
   var action = "rotate_canvas";
   data.append("action", action);
   data.append("index", index);
   data.append("path", path);
-  // data.append("measure_initial", measure);
   data.append("measure_current", div_measure.value);
   data.append("measure_w", measure_w);
   data.append("measure_h", measure_h);
@@ -186,10 +168,9 @@ function makeRotate(url, measure, measure_w, measure_h, index, path) {
       div_measure.value = measure_canvas
       div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
       div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
-      // console.log("Angle", angle_canvas)
-      // console.log("Measure", measure_canvas)
-      // console.log("Width", measure_width)
-      // console.log("Height", measure_height)
+      var measureW
+      var centerLf
+      measureW = measure_width
       measure_width = measure_width.toString() + "px"
       measure_height = measure_height.toString() + "px"
 
@@ -207,46 +188,93 @@ function makeRotate(url, measure, measure_w, measure_h, index, path) {
         div_canvasClass.style.height = measure_height;
         div_canvasId.style.width = measure_width;
         div_canvasClass.style.width = measure_width;
-        div_canvasId.style.left = "170px";
-        div_canvasClass.style.left = "170px";
+        if (measureW==400){ centerLf = "200px" }
+        if (measureW==460){ centerLf = "170px" }
+        if (measureW==540){ centerLf = "130px" }
+        div_canvasId.style.left = centerLf;
+        div_canvasClass.style.left = centerLf;
         div_canvasId.parentNode.style.height = "800px"
       }
-      // div_canvasId.style.backgroundImage = `url('${path_canvas}')`;
-      // div_canvasClass.style.backgroundImage = `url('${path_canvas}')`;
-      $(div_canvasId).css({ 'background-image': 'url(' + path_canvas + ')', 'background-repeat': 'no-repeat', 'background-size': 'cover' });
-      $(div_canvasClass).css({ 'background-image': 'url(' + path_canvas + ')', 'background-repeat': 'no-repeat', 'background-size': 'cover' });      
+      $(div_canvasId).css({ 'background-image': 'url('+ path_canvas +')', 'background-repeat': 'no-repeat', 'background-size': 'cover' });
+      $(div_canvasClass).css({ 'background-image': 'url('+ path_canvas +')', 'background-repeat': 'no-repeat', 'background-size': 'cover' });      
     }
     else {
         console.log('Canvas no fue actualizado')
     }    
   });
-
   // request error handler
   request.addEventListener("error", function (e) {
     alert(`Error procesando la imagen`, "danger");
   });
-
   // Open and send the request
   request.open("POST", url);
   request.send(data);
 }
 
-// DEACTIVATE ZOOM FUNCTION
-// function closeZoom(_this, measure) {
-//   var btn_zoom = _this.parentNode.querySelector('#btn_zoom');
-//   div_image.style.border = "0";
-//   if (measure=='H'){
-//     div_image.classList.remove("measure_h");
-//     div_canvasId.style.transform = "scale(1.0)";
-//     div_canvasClass.style.transform = "scale(1.0)";
-//   }
-//   else {
-//     div_image.classList.remove("measure_w");
-//   }
-//   btn_zoom.disabled = false
-//   _this.disabled = true
-//   _this.style.opacity = 0.5;
-// }
+// -----------------------------------------------------------------------------------------------------
+var bandScan = false
+function scanQR(_this, url, index) {
+  if (bandScan == false){
+    div_modal = document.getElementById("exampleModal_"+index)
+    div_image = div_modal.querySelector('#div_image');
+    div_rotate = div_modal.querySelector('#div_items').querySelector("#btn_rotate")
+    div_measure = div_modal.querySelector('#measure');
+    div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
+    div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
+    div_image.style.border = "2px dotted #00C";
+
+    // Create a new FormData instance
+    var data = new FormData();
+    // Create a XMLHTTPRequest instance
+    var request = new XMLHttpRequest();
+    // Set the response type
+    request.responseType = "json";
+
+    var action = "scan_voucher";
+    data.append("action", action);
+    data.append("index", index);
+    data.append("path", path_canvas)
+    data.append("measure_current", div_measure.value);
+
+    request.addEventListener("load", function (e) {
+      if (request.status == 200) {
+        data_scan = request.response['data_scan']
+        // console.log(data_scan)
+        if (data_scan=="None"){
+          alert("No se detectó QR")
+        }
+        else{
+          data_dat  = request.response['data_dat']
+          data_type = request.response['data_type']
+          data_bill = request.response['data_bill']
+          data_ciaruc = request.response['data_ciaruc']
+          data_cliruc = request.response['data_cliruc']
+          data_tot = request.response['data_tot']
+          data_igv = request.response['data_igv']
+          div_modal.querySelector('#div_items').querySelector("#data_dat").value = data_dat
+          div_modal.querySelector('#div_items').querySelector("#data_type").value = data_type
+          div_modal.querySelector('#div_items').querySelector("#data_bill").value = data_bill
+          div_modal.querySelector('#div_items').querySelector("#data_ciaruc").value = data_ciaruc
+          div_modal.querySelector('#div_items').querySelector("#data_cliruc").value = data_cliruc
+          div_modal.querySelector('#div_items').querySelector("#data_tot").value = data_tot
+          div_modal.querySelector('#div_items').querySelector("#data_igv").value = data_igv
+          alert("Voucher escaneado con éxito ...")
+        }
+      }
+      if (request.status == 300) {
+        alert('Warming on Voucher')
+        // showAlertPage(`${request.response.message}`, 'warning')
+      }
+    });
+    // request error handler
+    request.addEventListener("error", function (e) {
+      showAlertPage('Error escaneando voucher', 'danger')
+    });
+    // Open and send the request
+    request.open("POST", url);
+    request.send(data);
+    }
+}
 
 // --------------------------------------------------------------------------------------------------------
 function saveVoucher(_this, url, index) {
@@ -291,15 +319,14 @@ function saveVoucher(_this, url, index) {
 
   request.addEventListener("load", function (e) {
     if (request.status == 200) {
-      div_modal = document.getElementById("exampleModal_"+index)
-      div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
-      div_canvasClass.remove()
+      // div_modal = document.getElementById("exampleModal_"+index)
+      // div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
+      // div_canvasClass.remove()
       // showAlertPage('Voucher registrado con éxito', 'success')
-      // results = request.response['results']
       alert("Voucher registrado con éxito")
       closeVoucher(index)
       updateVoucher(index, data_dat.value, data_type.value, data_bill.value, data_ciaruc.value, data_tot.value, data_igv.value)
-      // location.reload();
+      // div_modal.setAttribute("style", `display: `);
     }
     else {
       showAlertPage('Voucher no fue registrado', 'warning')
@@ -308,7 +335,6 @@ function saveVoucher(_this, url, index) {
       showAlertPage(`${request.response.message}`, 'warning')
     }
   });
-
   // request error handler
   request.addEventListener("error", function (e) {
     showAlertPage('Error registrando voucher', 'danger')
@@ -326,9 +352,11 @@ var ctx;
 function openVoucher(_this, index, data_len, center_w) {
   _index = index
   _data_len = data_len
-  canvas_center = center_w
   div_modal = document.getElementById("exampleModal_"+index)
   div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
+  div_image = div_modal.querySelector('#div_image');
+  div_measure = div_modal.querySelector('#measure');
+
   if (!div_canvasClass){
     canvas_width = div_canvasId.width
     canvas_height = div_canvasId.height
@@ -341,18 +369,41 @@ function openVoucher(_this, index, data_len, center_w) {
   arrow = new Rectangle(canvas);
   ctx = canvas.getContext("2d");
   div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
-  div_canvasId.style.left = center_w
-  div_canvasId.width = canvas_width
-  div_canvasId.height = canvas_height
-  div_canvasClass.style.left = center_w
-  div_canvasClass.width = canvas_width
-  div_canvasClass.height = canvas_height
+
+  if (parseInt(canvas_width)>parseInt(canvas_height)){
+    measure_max = canvas_width
+    measure_min = canvas_height
+  }
+  else{
+    measure_max = canvas_height
+    measure_min = canvas_width
+  }
+  measure_max = measure_max.toString() + "px"
+  measure_min = measure_min.toString() + "px"
+
+  if (div_measure.value=='W'){
+    div_canvasId.style.width = measure_max;
+    div_canvasClass.style.width = measure_max;
+    div_canvasId.style.height = measure_min;
+    div_canvasClass.style.height = measure_min;
+    div_canvasId.style.left = "0px";
+    div_canvasClass.style.left = "0px";
+    div_canvasId.parentNode.style.height = "480px"
+  }
+  else {
+    div_canvasId.style.height = measure_max;
+    div_canvasClass.style.height = measure_max;
+    div_canvasId.style.width = measure_min;
+    div_canvasClass.style.width = measure_min;
+    div_canvasId.style.left = center_w;
+    div_canvasClass.style.left = center_w;
+    div_canvasId.parentNode.style.height = "800px"
+  }
 }
 
 // ACTION in order to CLOSE voucher details
 function closeVoucher(index) {
   document.getElementById("exampleModal_"+index).classList.remove("show");
-  // document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
   elements = document.getElementsByClassName("modal-backdrop");
   while (elements.length > 0) elements[0].remove();
 }
@@ -369,28 +420,59 @@ function moveVoucher(_this, index, direct) {
   }
 
   if (parseInt(_index) > 0 && parseInt(_index) < parseInt(_data_len)+1){
-    // console.log("I:"+index+" - _I:"+_index + " L:"+_data_len)
     document.getElementById("exampleModal_"+index).classList.remove("show");
     document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
-    div_canvasClass.remove()
-
     div_modal = document.getElementById("exampleModal_"+_index)
     div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
-    canvas_width = div_canvasId.width
-    canvas_height = div_canvasId.height
-    
+    div_measure = div_modal.querySelector('#measure');
+
+    if (!div_canvasClass){
+      canvas_width = div_canvasId.width
+      canvas_height = div_canvasId.height
+    }
+    else{
+      div_canvasClass.remove()
+    }
+
     canvas = new fabric.Canvas(div_canvasId);
     arrow = new Rectangle(canvas);
     ctx = canvas.getContext("2d");
     div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
-    center_width = (800 - canvas_width) / 2
-    console.log(center_width)
-    div_canvasId.style.left = center_width + "px"
-    div_canvasId.width = canvas_width
-    div_canvasId.height = canvas_height
-    div_canvasClass.style.left = center_width + "px"
-    div_canvasClass.width = canvas_width
-    div_canvasClass.height = canvas_height
+
+    if (parseInt(canvas_width)>parseInt(canvas_height)){
+      measure_max = canvas_width
+      measure_min = canvas_height
+    }
+    else{
+      measure_max = canvas_height
+      measure_min = canvas_width
+    }
+
+    measure_max = measure_max.toString() + "px"
+    measure_min = measure_min.toString() + "px"
+    // console.log("measure:", div_measure.value)
+
+    if (div_measure.value=='W'){
+      div_canvasId.style.width = measure_max;
+      div_canvasClass.style.width = measure_max;
+      div_canvasId.style.height = measure_min;
+      div_canvasClass.style.height = measure_min;
+      div_canvasId.style.left = "0px";
+      div_canvasClass.style.left = "0px";
+      div_canvasId.parentNode.style.height = "480px"
+    }
+    else {
+      div_canvasId.style.height = measure_max;
+      div_canvasClass.style.height = measure_max;
+      div_canvasId.style.width = measure_min;
+      div_canvasClass.style.width = measure_min;
+      if (measure_min=="400px"){ centerLf = "200px" }
+      if (measure_min=="460px"){ centerLf = "170px" }
+      if (measure_min=="540px"){ centerLf = "130px" }
+      div_canvasId.style.left = centerLf;
+      div_canvasClass.style.left = centerLf;
+      div_canvasId.parentNode.style.height = "800px"
+    }
     div_modal.classList.add("show");
     div_modal.setAttribute("style", `display: block`);
   }

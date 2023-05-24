@@ -75,7 +75,7 @@
                                                             </div>
                                                         </div>
                                                         {% else %}
-                                                        <div class="mb-6 text-center" id="div_image" style="margin: 0.5rem 0 0 0; width: 99% !important;">
+                                                        <div class="mb-6 text-center measure" id="div_image" style="margin: 0.5rem 0 0 0; width: 99% !important;">
                                                             <div id="canvasContainer" style="width: 100%; height: auto; margin: 0;">
                                                                 <div id="canvasContainer" class="text-center" style="width: 100%;">
                                                                     <canvas id="canvas" style="background-image: url('{{ data.path }}'); background-size: cover; position: relative; opacity: 0.95; margin: 0 auto; width: '{{ data.measure_w }}' !important; height: '{{ data.measure_h }}'; left: '{{ data.center_w }}';" width='{{ data.measure_w }}' height='{{ data.measure_h }}' left='{{ data.center_w }}'></canvas>
@@ -101,19 +101,24 @@
                                                             </div>
                                                             <div class="line" style="text-align: left; width: 99%; margin: 0.25rem 0 0.75rem; border-color: #999;"></div>
                                                             <div class="row g-3" style="margin: 0 0 0.75rem;">
-                                                                <div class="col-md-4" style="text-align: center; padding-left: 0;">
-                                                                    <button id="btn_zoom" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="activeZoom(this, '{{data.measure}}', '{{loop.index}}')">
-                                                                        <i class="fas fa-search-plus"><span> Zoom</span></i>
+                                                                <div class="col-md-3" style="text-align: center; padding-left: 0;">
+                                                                    <button id="btn_zoom" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="activeZoom(this, '{{loop.index}}')">
+                                                                        <i class="fas fa-search-plus"><br><span style="font-family: Arial, Helvetica, sans-serif; font-size: 12px !Important; line-height: 20px;">Zoom</span></i>
                                                                     </button>
                                                                 </div>
-                                                                <div class="col-md-4" style="text-align: center; padding-left: 12px;">
+                                                                <div class="col-md-3" style="text-align: center; padding-left: 8px;">
                                                                     <button id="btn_rotate" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="makeRotate('{{ request.url }}', '{{data.measure}}', '{{data.measure_w}}', '{{data.measure_h}}', '{{loop.index}}', '{{data.path}}')">
-                                                                        <i class="fas fa-redo-alt"><span> Rotar</span></i>
+                                                                        <i class="fas fa-redo-alt"><br><span style="font-family: Arial, Helvetica, sans-serif; font-size: 12px !Important; line-height: 20px;"> Rotar</span></i>
                                                                     </button>
                                                                 </div>
-                                                                <div class="col-md-4" style="text-align: center; padding-right: 0;">
+                                                                <div class="col-md-3" style="text-align: center; padding-left: 8px;">
+                                                                    <button id="btn_zoom" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="scanQR(this, '{{ request.url }}', '{{loop.index}}')">
+                                                                        <i class="fas fa-qrcode"><br><span style="font-family: Arial, Helvetica, sans-serif; font-size: 12px !Important; line-height: 20px;"> &nbsp;Scan&nbsp;</span></i>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col-md-3" style="text-align: center; padding-right: 0;">
                                                                     <button id="btn_extract" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="getTextCanvas('{{ request.url }}', '{{loop.index}}', '{{data.path}}')">
-                                                                        <i class="fas fa-sort-alpha-down"><span> Texto</span></i>
+                                                                        <i class="fas fa-sort-alpha-down"><br><span style="font-family: Arial, Helvetica, sans-serif; font-size: 12px !Important; line-height: 20px;"> Texto</span></i>
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -121,9 +126,9 @@
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">Fecha</p>
                                                                     {% if data.cli_dat %}
-                                                                    <input type="text" class="form-control" placeholder="dd/mm/aaaa" id="data_dat" name="data_dat" value="{{ data.cli_dat }}" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" placeholder="" id="data_dat" name="data_dat" value="{{ data.cli_dat }}" onclick="setValueItem(this, '{{loop.index}}')" required>
                                                                     {% else %}
-                                                                    <input type="text" class="form-control" placeholder="dd/mm/aaaa" id="data_dat" name="data_dat" value="" onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="date" class="form-control" id="data_dat" name="data_dat" value="" onclick="setValueItem(this, '{{loop.index}}')" required>
                                                                     {% endif %}
                                                                     <div class="valid-feedback">OK!</div>
                                                                     <div class="invalid-feedback">Ingrese fecha</div>
@@ -202,9 +207,9 @@
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">Nro Documento</p>
                                                                     {% if data.cli_fac %}
-                                                                    <input type="text" class="form-control" maxlength="15" id="data_bill" name="data_bill" value="{{ data.cli_fac }}" onkeypress='validateAlphanumerics(event)' onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" maxlength="18" id="data_bill" name="data_bill" value="{{ data.cli_fac }}" onkeypress='validateAlphanumerics(event)' onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% else %}
-                                                                    <input type="text" class="form-control" maxlength="15" id="data_bill" name="data_bill" value="" onkeypress='validateAlphanumerics(event)' onclick="setValueItem(this, '{{loop.index}}')">
+                                                                    <input type="text" class="form-control" maxlength="18" id="data_bill" name="data_bill" value="" onkeypress='validateAlphanumerics(event)' onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% endif %}
                                                                     <div class="valid-feedback">OK!</div>
                                                                     <div class="invalid-feedback">Ingrese factura</div>

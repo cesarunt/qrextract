@@ -129,3 +129,11 @@
 .measure_wRD:hover canvas{
     transform: scale(1.75) translate(-140px, 70px);
 }
+
+/* DATE keypress */
+input[type=date]:required:invalid::-webkit-datetime-edit {
+    color: transparent;
+}
+input[type=date]:focus::-webkit-datetime-edit {
+    color: black !important;
+}

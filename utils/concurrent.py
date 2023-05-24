@@ -45,12 +45,13 @@ def rotate_image(path, angle, measure_current, measure_w, measure_h):
         angle = int(angle) - 90
         img = Image.open(path)
         img = img.rotate(angle, expand=True)
+        ext = str(path.split("/")[-1]).split(".")[-1]
         if abs(angle) < 360:
-            filename = str(path.split("/")[-1]).split(".")[0] + '_rot'+ str(abs(angle)) + '.jpg'
+            filename = str(path.split("/")[-1]).split(".jp")[0] + '_rot'+ str(abs(angle)) + '.' + ext
             path = cfg.GLOBAL.QR_IMAGES + '/' + filename
             img.save(path)
         else:
-            filename = str(path.split("/")[-1]).split(".")[0] + '.jpg'
+            filename = str(path.split("/")[-1]).split(".jp")[0] + '.' + ext
             angle = 0
         path_canvas = cfg.GLOBAL.QR_IMAGES_WEB + '/' + filename
         measure_w = int(str(measure_w).split("px")[0])

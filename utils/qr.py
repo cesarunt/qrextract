@@ -4,6 +4,7 @@ from utils.config import cfg
 from werkzeug.utils import secure_filename
 from pdf2image import convert_from_path
 from PyPDF2 import PdfFileReader, PdfFileWriter
+import datetime
 import re
 import os
 
@@ -108,9 +109,9 @@ def parse_img_data(img):
             measure_h = "800px"
             center_w = "170px"
         else:
-            measure_w = "580px"
+            measure_w = "540px"
             measure_h = "800px"
-            center_w = "110px"
+            center_w = "130px"
     
     measure_dict = {
                 'measure':   measure,
@@ -163,7 +164,7 @@ def get_barcodes(barcodeData, list_bill):
                     break
             if len(code)>10 and str(code).count('-')==2:
                 data['type_doc'] = "F"
-                data['cli_fac'] = code
+                data['cli_fac'] = "F"+code
                 if data['cli_fac'] in list_bill:
                     repeat = True
                     break
@@ -182,8 +183,21 @@ def get_barcodes(barcodeData, list_bill):
             else:
                 data['cli_tot'] = code
         # Find DATE
+        date_started = []
+        date_complete = ""
         if len(code)==10 and (str(code).count('-')==2 or str(code).count('/')==2):
-            data['cli_dat'] = code
+            date_started = str(code).split('-')
+            if len(date_started)>1:
+                date_complete = datetime.datetime(int(date_started[0]), int(date_started[1]), int(date_started[2]))
+                date_complete = date_complete.strftime('%d/%m/%Y')
+            date_started = str(code).split('/')
+            if len(date_started)>1:
+                if len(date_started[0])==2:
+                    date_complete = code
+                if len(date_started[0])==4:
+                    date_complete = datetime.datetime(int(date_started[0]), int(date_started[1]), int(date_started[2]))
+                    date_complete = date_complete.strftime('%d/%m/%Y')
+            data['cli_dat'] = date_complete
 
     return data, repeat
 
@@ -194,6 +208,7 @@ def parse_qr_data(img, measure, path, list_bill):
     data = {}
     bill = ""
     barcodes = pyzbar.decode(img)
+    # print("barcodes: ", barcodes)
         
     if len(barcodes) > 0 :
         # loop over the detected barcodes
