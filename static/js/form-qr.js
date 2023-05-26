@@ -10,6 +10,7 @@ var select_control
 var inputFiles = document.getElementById("files");
 var alert_wrapper = document.getElementById("alert_wrapper");
 var process_wrapper = document.getElementById("process_wrapper");
+var path_canvas
 
 // ---------------------------
 function showAlertPage(message, alert) {
@@ -62,6 +63,7 @@ function clicQRProgress(_this) {
 var bandZoom = false
 var measure_last = "measure"
 function activeZoom(_this, index) {
+  console.log("Zoom......")
   if (div_image){
     div_image.classList.remove(measure_last);
   }
@@ -130,10 +132,53 @@ function activeZoom(_this, index) {
   }
 }
 
-// ROTATE FUNCTION
-var path_canvas
+// GET RUC NAME WITH API
 // --------------------------------------------------------------------------------------------------
-function makeRotate(url, measure, measure_w, measure_h, index, path) {
+function getRUCName(url, index) {
+  // Create a new FormData instance
+  var data = new FormData();
+  // Create a XMLHTTPRequest instance
+  var request = new XMLHttpRequest();
+  // Set the response type
+  request.responseType = "json";
+  div_modal = document.getElementById("exampleModal_"+index)
+  div_ciaruc = div_modal.querySelector('#div_items').querySelector("#data_ciaruc")
+
+  var action = "get_rucname";
+  data.append("action", action);
+  data.append("index", index);
+  data.append("rucnumber", div_ciaruc.value);
+
+  // request load handler (transfer complete)
+  request.addEventListener("load", function (e) {
+    if (request.status == 200) {
+      rucname_canvas = request.response['rucname_canvas']
+      if (rucname_canvas=="-"){
+        rucname_canvas = "Número de RUC erróneo!"
+        div_modal.querySelector('#div_items').querySelector("#data_cianame").style.color = "darkred"
+        div_modal.querySelector('#div_items').querySelector("#data_cianame").innerHTML = rucname_canvas
+      }
+      else{
+        div_modal.querySelector('#div_items').querySelector("#data_cianame").style.color = "darkblue"
+        div_modal.querySelector('#div_items').querySelector("#data_cianame").innerHTML = rucname_canvas
+      }
+    }
+    else {
+        console.log('Nombre RUC no fue obtenido')
+    }    
+  });
+  // request error handler
+  request.addEventListener("error", function (e) {
+    alert(`Error reading API service`, "danger");
+  });
+  // Open and send the request
+  request.open("POST", url);
+  request.send(data);
+}
+
+// ROTATE FUNCTION
+// --------------------------------------------------------------------------------------------------
+function makeRotate(url, measure_w, measure_h, index, path) {
   // Create a new FormData instance
   var data = new FormData();
   // Create a XMLHTTPRequest instance
@@ -191,6 +236,7 @@ function makeRotate(url, measure, measure_w, measure_h, index, path) {
         if (measureW==400){ centerLf = "200px" }
         if (measureW==460){ centerLf = "170px" }
         if (measureW==540){ centerLf = "130px" }
+        if (measureW==580){ centerLf = "110px" }
         div_canvasId.style.left = centerLf;
         div_canvasClass.style.left = centerLf;
         div_canvasId.parentNode.style.height = "800px"
@@ -213,7 +259,7 @@ function makeRotate(url, measure, measure_w, measure_h, index, path) {
 
 // -----------------------------------------------------------------------------------------------------
 var bandScan = false
-function scanQR(_this, url, index) {
+function scanQR(_this, url, index, path) {
   if (bandScan == false){
     div_modal = document.getElementById("exampleModal_"+index)
     div_image = div_modal.querySelector('#div_image');
@@ -229,6 +275,7 @@ function scanQR(_this, url, index) {
     var request = new XMLHttpRequest();
     // Set the response type
     request.responseType = "json";
+    if (path!=""){ path_canvas = path }
 
     var action = "scan_voucher";
     data.append("action", action);
@@ -239,7 +286,6 @@ function scanQR(_this, url, index) {
     request.addEventListener("load", function (e) {
       if (request.status == 200) {
         data_scan = request.response['data_scan']
-        // console.log(data_scan)
         if (data_scan=="None"){
           alert("No se detectó QR")
         }
@@ -258,7 +304,7 @@ function scanQR(_this, url, index) {
           div_modal.querySelector('#div_items').querySelector("#data_cliruc").value = data_cliruc
           div_modal.querySelector('#div_items').querySelector("#data_tot").value = data_tot
           div_modal.querySelector('#div_items').querySelector("#data_igv").value = data_igv
-          alert("Voucher escaneado con éxito ...")
+          alert("Voucher escaneado con éxito")
         }
       }
       if (request.status == 300) {
@@ -294,7 +340,9 @@ function saveVoucher(_this, url, index) {
   if (!data_type.value) { alert("Debe seleccionar tipo Documento", "warning"); return; }
   if (!data_bill.value) { alert("Debe ingresar No Documento", "warning"); return; }
   if (!data_ciaruc.value) { alert("Debe ingresar RUC empresa", "warning"); return; }
+  if (data_ciaruc.value.length != 11) { alert("RUC Empresa debe tener 11 digitos", "warning"); return; }
   if (!data_cliruc.value) { alert("Debe ingresar RUC cliente", "warning"); return; }
+  if (data_cliruc.value.length != 11) { alert("RUC Cliente debe tener 11 digitos", "warning"); return; }
   if (!data_tot.value)  { alert("Debe ingresar total", "warning"); return; }
   if (!data_igv.value)  { alert("Debe ingresar IGV", "warning"); return; }
 
@@ -357,11 +405,7 @@ function openVoucher(_this, index, data_len, center_w) {
   div_image = div_modal.querySelector('#div_image');
   div_measure = div_modal.querySelector('#measure');
 
-  if (!div_canvasClass){
-    canvas_width = div_canvasId.width
-    canvas_height = div_canvasId.height
-  }
-  else{
+  if (div_canvasClass){
     div_canvasClass.remove()
   }
 
@@ -370,13 +414,13 @@ function openVoucher(_this, index, data_len, center_w) {
   ctx = canvas.getContext("2d");
   div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
 
-  if (parseInt(canvas_width)>parseInt(canvas_height)){
-    measure_max = canvas_width
-    measure_min = canvas_height
+  if (parseInt(div_canvasClass.width)>parseInt(div_canvasClass.height)){
+    measure_max = div_canvasClass.width
+    measure_min = div_canvasClass.height
   }
   else{
-    measure_max = canvas_height
-    measure_min = canvas_width
+    measure_max = div_canvasClass.height
+    measure_min = div_canvasClass.width
   }
   measure_max = measure_max.toString() + "px"
   measure_min = measure_min.toString() + "px"
@@ -406,6 +450,7 @@ function closeVoucher(index) {
   document.getElementById("exampleModal_"+index).classList.remove("show");
   elements = document.getElementsByClassName("modal-backdrop");
   while (elements.length > 0) elements[0].remove();
+  document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
 }
 
 // ACTION in order to MOVE voucher down & up
@@ -426,11 +471,7 @@ function moveVoucher(_this, index, direct) {
     div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
     div_measure = div_modal.querySelector('#measure');
 
-    if (!div_canvasClass){
-      canvas_width = div_canvasId.width
-      canvas_height = div_canvasId.height
-    }
-    else{
+    if (div_canvasClass){
       div_canvasClass.remove()
     }
 
@@ -439,18 +480,16 @@ function moveVoucher(_this, index, direct) {
     ctx = canvas.getContext("2d");
     div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
 
-    if (parseInt(canvas_width)>parseInt(canvas_height)){
-      measure_max = canvas_width
-      measure_min = canvas_height
+    if (parseInt(div_canvasClass.width)>parseInt(div_canvasClass.height)){
+      measure_max = div_canvasClass.width
+      measure_min = div_canvasClass.height
     }
     else{
-      measure_max = canvas_height
-      measure_min = canvas_width
+      measure_max = div_canvasClass.height
+      measure_min = div_canvasClass.width
     }
-
     measure_max = measure_max.toString() + "px"
     measure_min = measure_min.toString() + "px"
-    // console.log("measure:", div_measure.value)
 
     if (div_measure.value=='W'){
       div_canvasId.style.width = measure_max;
@@ -469,6 +508,7 @@ function moveVoucher(_this, index, direct) {
       if (measure_min=="400px"){ centerLf = "200px" }
       if (measure_min=="460px"){ centerLf = "170px" }
       if (measure_min=="540px"){ centerLf = "130px" }
+      if (measure_min=="580px"){ centerLf = "110px" }
       div_canvasId.style.left = centerLf;
       div_canvasClass.style.left = centerLf;
       div_canvasId.parentNode.style.height = "800px"

@@ -24,7 +24,6 @@
                                             <th>TIPO<br>Doc</th>
                                             <th>NUMERO<br>Doc</th>
                                             <th>RUC Empresa</th>
-                                            <!-- <th>RUC Cliente</th> -->
                                             <th style="text-align: center;">TOTAL<br>(S/ $)</th>
                                             <th style="text-align: center;">IGV<br>(18%)</th>
                                             <th>Estado<br>&nbsp;&nbsp;(%)</th>
@@ -36,7 +35,7 @@
                                         <tr id="voucher_{{loop.index}}" style="border-bottom: 1px solid #CCC;">
                                             <td id="index" style="text-align: center;">{{ loop.index }}</td>
                                             <td id="date">{{data.cli_dat}}</td>
-                                            <td id="doc_type" style="text-align: center;">{{data.type_doc}}</td>
+                                            <td id="doc_type">{{data.type_doc}}</td>
                                             <td id="doc_number">{{data.cli_fac}}</td>
                                             <td id="ruc_cia">{{data.cia_ruc}}</td>
                                             <!-- <td>{{data.cli_ruc}}</td> -->
@@ -107,12 +106,12 @@
                                                                     </button>
                                                                 </div>
                                                                 <div class="col-md-3" style="text-align: center; padding-left: 8px;">
-                                                                    <button id="btn_rotate" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="makeRotate('{{ request.url }}', '{{data.measure}}', '{{data.measure_w}}', '{{data.measure_h}}', '{{loop.index}}', '{{data.path}}')">
+                                                                    <button id="btn_rotate" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="makeRotate('{{ request.url }}', '{{data.measure_w}}', '{{data.measure_h}}', '{{loop.index}}', '{{data.path}}')">
                                                                         <i class="fas fa-redo-alt"><br><span style="font-family: Arial, Helvetica, sans-serif; font-size: 12px !Important; line-height: 20px;"> Rotar</span></i>
                                                                     </button>
                                                                 </div>
                                                                 <div class="col-md-3" style="text-align: center; padding-left: 8px;">
-                                                                    <button id="btn_zoom" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="scanQR(this, '{{ request.url }}', '{{loop.index}}')">
+                                                                    <button id="btn_zoom" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="scanQR(this, '{{ request.url }}', '{{loop.index}}', '{{data.path}}')">
                                                                         <i class="fas fa-qrcode"><br><span style="font-family: Arial, Helvetica, sans-serif; font-size: 12px !Important; line-height: 20px;"> &nbsp;Scan&nbsp;</span></i>
                                                                     </button>
                                                                 </div>
@@ -216,7 +215,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="row g-2">
-                                                                <div class="mb-3 col-md-6">
+                                                                <div class="mb-3 col-md-6" style="margin-bottom: 0;">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">RUC Empresa</p>
                                                                     {% if data.cia_ruc %}
                                                                     <input type="text" class="form-control" maxlength="11" id="data_ciaruc" name="data_ciaruc" value="{{ data.cia_ruc }}" onkeypress="validateNumbers(event)" onclick="setValueItem(this, '{{loop.index}}')">
@@ -226,7 +225,7 @@
                                                                     <div class="valid-feedback">OK!</div>
                                                                     <div class="invalid-feedback">Ingrese ruc</div>
                                                                 </div>
-                                                                <div class="mb-3 col-md-6">
+                                                                <div class="mb-3 col-md-6" style="margin-bottom: 0;">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">RUC Cliente</p>
                                                                     {% if data.cia_ruc %}
                                                                     <input type="text" class="form-control" maxlength="11" id="data_cliruc" name="data_cliruc" value="{{ data.cli_ruc }}" onkeypress="validateNumbers(event)" onclick="setValueItem(this, '{{loop.index}}')">
@@ -237,6 +236,16 @@
                                                                     <div class="invalid-feedback">Ingrese ruc</div>
                                                                 </div>
                                                             </div>
+                                                            <div class="row g-2">
+                                                                <div class="mb-12 col-md-12" style="margin-top: 0;">
+                                                                    <button type="button" class="btn btn-icon icon-left btn-info mb-2" style="width: 28px; height: 25px; line-height: 20px;" title="Ver Razón Social" onclick="getRUCName('{{ request.url }}', '{{loop.index}}')">
+                                                                        <i class="fas fa-arrow-circle-right">
+                                                                        </i>
+                                                                    </button>
+                                                                    <p id="data_cianame" style="margin: 0 0 0 5px; color: darkblue; display: inline; font-size: small;">&nbsp;</p>
+                                                                </div>
+                                                            </div>
+
                                                             <div class="row g-2">
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">Total</p>

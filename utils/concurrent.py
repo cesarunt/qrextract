@@ -111,7 +111,7 @@ def process_image(file, list_bill):
     # Data OK y Bill No es Repetido
     if len(data)>0:
         return data, bill
-    # # Data NULL y Bill es Repetido
+    # Data NULL y Bill es Repetido
     else:
         # Extraer texto de la imagen
         text = pytesseract.image_to_string(img, lang='spa', config='--dpi 2 --psm 6')

@@ -68,7 +68,7 @@
     transition: 0.5s all ease-in-out;
 }
 .measure_hUp:hover canvas{
-    transform: scale(1.75) translate(0px, -140px);
+    transform: scale(1.60) translate(0px, -145px);
 }
 
 .measure_hDw {
@@ -80,7 +80,7 @@
     transition: 0.5s all ease-in-out;
 }
 .measure_hDw:hover canvas{
-    transform: scale(1.75) translate(0px, 140px);
+    transform: scale(1.60) translate(0px, 145px);
 }
 
 

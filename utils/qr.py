@@ -29,8 +29,10 @@ def split_img(path, files_split):
     result = False
     pdf_reader = PdfFileReader(path)
     box = pdf_reader.pages[0].mediaBox
-    pdf_width = box.getWidth()
-    pdf_height = box.getHeight()
+    # pdf_width = box.getWidth()
+    # pdf_height = box.getHeight()
+    pdf_width = 580
+    pdf_height = 800
     image = convert_from_path(path, dpi=300, size=(pdf_width, pdf_height))
     filename = files_split + '/' + str(path.split("/")[-1]).split(".")[0] + '.jpg'
     if image:
@@ -64,6 +66,9 @@ def save_file(file):
                 image_height = 800
             elif fw > 1.75:
                 image_width = 460
+                image_height = 800
+            elif fw > 1.45:
+                image_width = 540
                 image_height = 800
             else:
                 image_width = 580
@@ -108,10 +113,14 @@ def parse_img_data(img):
             measure_w = "460px"
             measure_h = "800px"
             center_w = "170px"
-        else:
+        elif fw > 1.45:
             measure_w = "540px"
             measure_h = "800px"
             center_w = "130px"
+        else:
+            measure_w = "580px"
+            measure_h = "800px"
+            center_w = "110px"
     
     measure_dict = {
                 'measure':   measure,
@@ -133,6 +142,7 @@ def get_barcodes(barcodeData, list_bill):
     data['type_doc'] = ""
     data['currency'] = "S"
     data['cli_fac'] = ""
+    data['cli_ruc'] = ""
 
     if len(barcodeData) > 7:
         data['is_full'] = 1

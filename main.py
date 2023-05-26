@@ -3,7 +3,7 @@ from flask import jsonify
 from utils.concurrent import process_image, getting_text, rotate_image # process_images
 from utils.qr import *
 from utils.config import cfg
-import time, json, os
+import time, json, requests
 from werkzeug.utils import secure_filename
 
 
@@ -39,6 +39,23 @@ def qr_post():
             results[index]['path']     = path_canvas
             results[index]['measure']  = measure_canvas
         return render_template('results.html', results=results, data_len=len(results), data_repeat=0)
+    elif action == "get_rucname":
+            rucname = ""
+            index = int(request.values.get("index"))
+            rucnumber = int(request.values.get("rucnumber"))
+            api_url = "https://sigtram.munipuentepiedra.gob.pe/servicio/ruc.php"
+            params = {
+                "ruc": rucnumber
+            }
+            response = requests.get(api_url, params=params)
+            json_data = response.json()
+
+            # Acceder a los datos del JSON
+            rucname = json_data["DATA"]["NOMBRE_COMPLETO"]
+            if rucname=="":
+                return jsonify({'rucname_canvas': '-'})
+            else:
+                return jsonify({'rucname_canvas': rucname})
     elif action == "get_canvas":
             index = int(request.values.get("index"))
             path = cfg.GLOBAL.GLOBAL_PATH + "/" + request.values.get("path")
@@ -67,8 +84,7 @@ def qr_post():
                                 })
     elif action == "scan_voucher":
         # Format the path of Image
-        path = cfg.GLOBAL.GLOBAL_PATH + request.values.get("path")
-        print("path", path)
+        path = cfg.GLOBAL.GLOBAL_PATH + "/" + request.values.get("path")
         img = Image.open(path)
         measure_current = request.values.get("measure_current")
         list_bill = []
@@ -80,8 +96,6 @@ def qr_post():
                     'center_w':  0
                 }
         data, _ = parse_qr_data(img, measure, path, list_bill)
-        print("len data", len(data))
-        print("len data", int(len(data)))
         if int(len(data))==0:
             return jsonify({'data_scan': "None"})
         else:
@@ -93,7 +107,6 @@ def qr_post():
                             'data_tot':     data['cli_tot'],
                             'data_igv':     data['cli_igv']
                             })
-            
     else:
         if len(results)==0:
             start_time = time.time()
