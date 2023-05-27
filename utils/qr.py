@@ -198,8 +198,11 @@ def get_barcodes(barcodeData, list_bill):
         if len(code)==10 and (str(code).count('-')==2 or str(code).count('/')==2):
             date_started = str(code).split('-')
             if len(date_started)>1:
-                date_complete = datetime.datetime(int(date_started[0]), int(date_started[1]), int(date_started[2]))
-                date_complete = date_complete.strftime('%d/%m/%Y')
+                if len(date_started[0])==2:
+                    date_complete = str(code).replace("-", "/")
+                if len(date_started[0])==4:
+                    date_complete = datetime.datetime(int(date_started[0]), int(date_started[1]), int(date_started[2]))
+                    date_complete = date_complete.strftime('%d/%m/%Y')
             date_started = str(code).split('/')
             if len(date_started)>1:
                 if len(date_started[0])==2:
