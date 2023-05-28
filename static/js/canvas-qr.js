@@ -64,9 +64,6 @@ var Rectangle = (function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         dictCanvas.push(dictPage)
         var objects = canvas.getObjects();
-        // console.log("DICT")
-        // console.log(objects)
-        // console.log(dictCanvas)
     };
 
     Rectangle.prototype.onMouseMove = function (o) {
@@ -162,11 +159,14 @@ function getTextCanvas(url, index, path) {
   // Set the response type
   request.responseType = "json";
 
+  var name_id = (select_control).toString()
+
   var text_canvas = ""
   var action = "get_canvas";
   data.append("action", action);
   data.append("index", index);
   data.append("path", path);
+  data.append("name_id", name_id);
   data.append("dictCanvas", JSON.stringify(dictCanvas));
 
   // request load handler (transfer complete)
@@ -178,8 +178,9 @@ function getTextCanvas(url, index, path) {
         }
         else {
             div_modal = document.getElementById("exampleModal_"+select_index)
-            div_item = div_modal.querySelector("#div_items").querySelector(('#'+select_control).toString())
+            div_item = div_modal.querySelector("#div_items").querySelector('#'+name_id)
             div_item.value = text_canvas
+            // console.log("text_canvas", text_canvas)
         }
     }
     else {

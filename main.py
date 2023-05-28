@@ -59,8 +59,9 @@ def qr_post():
     elif action == "get_canvas":
             index = int(request.values.get("index"))
             path = cfg.GLOBAL.GLOBAL_PATH + "/" + request.values.get("path")
+            name_id = str(request.values.get("name_id"))
             dictCanvas = json.loads(request.values.get("dictCanvas"))
-            text_canvas = getting_text(path, dictCanvas)
+            text_canvas = getting_text(path, dictCanvas, name_id)
             if text_canvas!="":
                 return jsonify({'text_canvas': text_canvas})
             else:

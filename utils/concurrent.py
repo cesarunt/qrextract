@@ -7,7 +7,7 @@ import cv2
 pytesseract.pytesseract.tesseract_cmd = cfg.GLOBAL.GLOBAL_TESS
 
 
-def getting_text(path, dictCanvas):
+def getting_text(path, dictCanvas, name_id):
     # dictCanvas = json.loads(request.values.get("dictCanvas"))
     i = 0
     text_canvas = ""
@@ -15,21 +15,25 @@ def getting_text(path, dictCanvas):
     # dictPage = None
     for dictVal in dictCanvas:
         i += 1
-        # print("image path", image)
         image = cv2.imread(path, 0)
         # thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
         _y = dictVal['y']
         _h = dictVal['h']
         _x = dictVal['x']
         _w = dictVal['w']
-        # print("X Y W H", str(_x) + " " + str(_y) + " " + str(_w) + " " + str(_h))
         # ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
         ROI = image[_y: _y + _h, _x: _x + _w]
-        # print("ROI", ROI)
         language = "spa"
         try:
             text_canvas = pytesseract.image_to_string(ROI, lang=language, config='--psm 6')
-            # result_canvas = True
+            if name_id == "data_dat":
+                text_canvas = str(text_canvas).replace(" ","").replace("-", "").replace("—","")
+                text_canvas_list = text_canvas.split("/")
+                if len(text_canvas_list[0])==2:
+                    text_canvas = text_canvas_list[2] + "-" + text_canvas_list[1] + "-" + text_canvas_list[0]
+                    text_canvas = str(text_canvas).replace("\n","")
+                if len(text_canvas_list[0])==4:
+                    text_canvas = str(text_canvas).replace("/","-")
             print("TEXT FINAL,", text_canvas)
         except Exception as e:
                 print(e)
