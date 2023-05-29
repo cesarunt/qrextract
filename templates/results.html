@@ -53,7 +53,7 @@
                                                 {% endif %}
                                             </td>
                                             <td class="action" style="text-align: center; font-size: medium;">
-                                                <button type="button" class="btn" style="padding: 0 2px;" data-toggle="modal" data-target="#exampleModal_{{loop.index}}" onclick="openVoucher(this, '{{ loop.index }}', '{{ data_len }}', '{{ data.center_w }}')">
+                                                <button type="button" class="btn" style="padding: 0 2px;" data-toggle="modal" data-target="#exampleModal_{{loop.index}}" onclick="openVoucher(this, '{{ loop.index }}', '{{ data_len }}', '{{data.measure_w}}', '{{data.measure_h}}', '{{ data.center_w }}')">
                                                     <span class="fa-fw select-all fas"></span>
                                                 </button>
                                             </td>

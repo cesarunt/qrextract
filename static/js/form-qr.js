@@ -356,6 +356,7 @@ function saveVoucher(_this, url, index) {
   var action = "save_voucher";
   data.append("action", action);
   data.append("index", index)
+  // console.log("data date", data_dat.value)
   data.append("data_dat", data_dat.value);
   data.append("data_cur", data_cur.value);
   data.append("data_type", data_type.value);
@@ -397,7 +398,7 @@ var arrow;
 var ctx;
 
 // ACTION in order to OPEN voucher details
-function openVoucher(_this, index, data_len, center_w) {
+function openVoucher(_this, index, data_len, measure_w, measure_h, center_w) {
   _index = index
   _data_len = data_len
   div_modal = document.getElementById("exampleModal_"+index)
@@ -405,17 +406,8 @@ function openVoucher(_this, index, data_len, center_w) {
   div_image = div_modal.querySelector('#div_image');
   div_measure = div_modal.querySelector('#measure');
 
-  if (div_canvasClass){
-    div_canvasClass.remove()
-  }
-  canvas_width = div_canvasId.width
-  canvas_height = div_canvasId.height
-  
-  canvas = new fabric.Canvas(div_canvasId);
-  arrow = new Rectangle(canvas);
-  ctx = canvas.getContext("2d");
-  div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
-
+  canvas_width = measure_w.split("px")[0]
+  canvas_height = measure_h.split("px")[0]
   if (parseInt(canvas_width)>parseInt(canvas_height)){
     measure_max = canvas_width
     measure_min = canvas_height
@@ -427,6 +419,20 @@ function openVoucher(_this, index, data_len, center_w) {
   measure_max = measure_max.toString() + "px"
   measure_min = measure_min.toString() + "px"
 
+  if (div_canvasClass){
+    div_canvasClass.remove()
+    cleanCanvas()
+    console.log("canvas remove")
+  }
+
+  canvas = new fabric.Canvas(div_canvasId);
+  arrow = new Rectangle(canvas);
+  ctx = canvas.getContext("2d");
+  div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
+  // console.log("div_canvasClass", div_canvasClass)
+  // console.log("canvas_width", canvas_width)
+  // console.log("canvas_height", canvas_height)
+  
   if (div_measure.value=='W'){
     // div_canvasId.width = measure_max //
     div_canvasId.style.width = measure_max;
@@ -460,7 +466,7 @@ function closeVoucher(index) {
   document.getElementById("exampleModal_"+index).classList.remove("show");
   elements = document.getElementsByClassName("modal-backdrop");
   while (elements.length > 0) elements[0].remove();
-  document.getElementById("exampleModal_"+index).setAttribute("style", "display: inherit;");
+  document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
 }
 
 // ACTION in order to MOVE voucher down & up
