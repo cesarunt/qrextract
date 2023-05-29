@@ -355,8 +355,7 @@ function saveVoucher(_this, url, index) {
 
   var action = "save_voucher";
   data.append("action", action);
-  data.append("index", index)
-  // console.log("data date", data_dat.value)
+  data.append("index", index);
   data.append("data_dat", data_dat.value);
   data.append("data_cur", data_cur.value);
   data.append("data_type", data_type.value);
@@ -368,14 +367,10 @@ function saveVoucher(_this, url, index) {
 
   request.addEventListener("load", function (e) {
     if (request.status == 200) {
-      // div_modal = document.getElementById("exampleModal_"+index)
-      // div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
-      // div_canvasClass.remove()
-      // showAlertPage('Voucher registrado con éxito', 'success')
+      date_complete = request.response['date_complete']
       alert("Voucher registrado con éxito")
       closeVoucher(index)
-      updateVoucher(index, data_dat.value, data_type.value, data_bill.value, data_ciaruc.value, data_tot.value, data_igv.value)
-      // div_modal.setAttribute("style", `display: `);
+      updateVoucher(index, date_complete, data_type.value, data_bill.value, data_ciaruc.value, data_tot.value, data_igv.value)
     }
     else {
       showAlertPage('Voucher no fue registrado', 'warning')

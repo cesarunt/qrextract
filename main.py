@@ -26,7 +26,23 @@ def qr_post():
     
     if action == "save_voucher":
         index = int(request.values.get("index"))-1
-        results[index]['cli_dat']  = request.values.get("data_dat")
+        # Calculate date
+        code = request.values.get("data_dat")
+        date_started = str(code).split('-')
+        if len(date_started)>1:
+            if len(date_started[0])==2:
+                date_complete = str(code).replace("-", "/")
+            if len(date_started[0])==4:
+                date_complete = datetime.datetime(int(date_started[0]), int(date_started[1]), int(date_started[2]))
+                date_complete = date_complete.strftime('%d/%m/%Y')
+        date_started = str(code).split('/')
+        if len(date_started)>1:
+            if len(date_started[0])==2:
+                date_complete = code
+            if len(date_started[0])==4:
+                date_complete = datetime.datetime(int(date_started[0]), int(date_started[1]), int(date_started[2]))
+                date_complete = date_complete.strftime('%d/%m/%Y')    
+        results[index]['cli_dat']  = date_complete
         results[index]['currency'] = request.values.get("data_cur")
         results[index]['type_doc'] = request.values.get("data_type")
         results[index]['cli_fac']  = str(request.values.get("data_bill")).upper()
@@ -38,7 +54,8 @@ def qr_post():
         if path_canvas!="":
             results[index]['path']     = path_canvas
             results[index]['measure']  = measure_canvas
-        return render_template('results.html', results=results, data_len=len(results), data_repeat=0)
+        return jsonify({'date_complete': date_complete})
+        # return render_template('results.html', results=results, data_len=len(results), data_repeat=0)
     elif action == "get_rucname":
             rucname = ""
             index = int(request.values.get("index"))

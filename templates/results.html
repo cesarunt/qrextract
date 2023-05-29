@@ -38,7 +38,6 @@
                                             <td id="doc_type">{{data.type_doc}}</td>
                                             <td id="doc_number">{{data.cli_fac}}</td>
                                             <td id="ruc_cia">{{data.cia_ruc}}</td>
-                                            <!-- <td>{{data.cli_ruc}}</td> -->
                                             <td id="total" style="text-align: center;">{{data.cli_tot}}</td>
                                             <td id="igv" style="text-align: center;">{{data.cli_igv}}</td>
                                             <td id="state">
@@ -227,7 +226,7 @@
                                                                 </div>
                                                                 <div class="mb-3 col-md-6" style="margin-bottom: 0;">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">RUC Cliente</p>
-                                                                    {% if data.cia_ruc %}
+                                                                    {% if data.cli_ruc %}
                                                                     <input type="text" class="form-control" maxlength="11" id="data_cliruc" name="data_cliruc" value="{{ data.cli_ruc }}" onkeypress="validateNumbers(event)" onclick="setValueItem(this, '{{loop.index}}')">
                                                                     {% else %}
                                                                     <input type="text" class="form-control" maxlength="11" id="data_cliruc" name="data_cliruc" value="" onkeypress="validateNumbers(event)" onclick="setValueItem(this, '{{loop.index}}')">
