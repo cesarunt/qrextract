@@ -36,7 +36,7 @@
                                             <td id="index" style="text-align: center;">{{ loop.index }}</td>
                                             <td id="date">{{data.cli_dat}}</td>
                                             <td id="doc_type">{{data.type_doc}}</td>
-                                            <td id="doc_number">{{data.cli_fac}}</td>
+                                            <td style="text-transform:uppercase;" id="doc_number">{{data.cli_fac}}</td>
                                             <td id="ruc_cia">{{data.cia_ruc}}</td>
                                             <td id="total" style="text-align: center;">{{data.cli_tot}}</td>
                                             <td id="igv" style="text-align: center;">{{data.cli_igv}}</td>
@@ -124,9 +124,9 @@
                                                                 <div class="mb-3 col-md-6">
                                                                     <p style="margin: 0 5px 0; color: darkgrey;">Fecha</p>
                                                                     {% if data.cli_dat %}
-                                                                    <input type="text" class="form-control" placeholder="" id="data_dat" name="data_dat" value="{{ data.cli_dat }}" onclick="setValueItem(this, '{{loop.index}}')" required>
+                                                                    <input type="text" class="form-control" maxlength="10" placeholder="" id="data_dat" name="data_dat" value="{{ data.cli_dat }}" onclick="setValueItem(this, '{{loop.index}}')" required>
                                                                     {% else %}
-                                                                    <input type="date" class="form-control" id="data_dat" name="data_dat" value="" onclick="setValueItem(this, '{{loop.index}}')" required>
+                                                                    <input type="date" class="form-control" max="2999-12-31" id="data_dat" name="data_dat" value="" onclick="setValueItem(this, '{{loop.index}}')" required>
                                                                     {% endif %}
                                                                     <div class="valid-feedback">OK!</div>
                                                                     <div class="invalid-feedback">Ingrese fecha</div>

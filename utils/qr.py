@@ -27,10 +27,8 @@ def validate_path(path):
 
 def split_img(path, files_split):
     result = False
-    pdf_reader = PdfFileReader(path)
-    box = pdf_reader.pages[0].mediaBox
-    # pdf_width = box.getWidth()
-    # pdf_height = box.getHeight()
+    # pdf_reader = PdfFileReader(path)
+    # box = pdf_reader.pages[0].mediaBox
     pdf_width = 580
     pdf_height = 800
     image = convert_from_path(path, dpi=300, size=(pdf_width, pdf_height))
@@ -53,7 +51,6 @@ def save_file(file):
         img_original = img
         image_width  = 0
         image_height = 0
-
         if int(img.width)>int(img.height):
             image_height = 540
             image_width = 800
@@ -89,7 +86,6 @@ def save_file(file):
             img_original = img
             filename = str(filename).split("/")[-1]
             path = os.path.join('files/qr_images', filename)
-            # path = filename
    
     return img_original, path
 
@@ -172,9 +168,14 @@ def get_barcodes(barcodeData, list_bill):
                 if data['cli_fac'] in list_bill:
                     repeat = True
                     break
+            if len(code)==1 or len(code)==2:
+                if int(code) == 1:
+                    data['type_doc'] = "F"
             if len(code)>10 and str(code).count('-')==2:
-                data['type_doc'] = "F"
-                data['cli_fac'] = "F"+code
+                if data['type_doc'] == "":
+                    data['type_doc'] = code[0]
+                list_code = str(code).split('-')
+                data['cli_fac'] = "F" + list_code[0] + '-' + list_code[2]
                 if data['cli_fac'] in list_bill:
                     repeat = True
                     break
@@ -228,8 +229,8 @@ def parse_qr_data(img, measure, path, list_bill):
         for barcode in barcodes:
             barcodeText = str(barcode.data.decode("utf-8"))
             barcodeData = barcodeText.split('|')
-        # print("\nbarcodeData LEN", len(barcodeData))
-        # print("barcodeData CONTENT", barcodeData)
+        print("\nbarcodeData LEN", len(barcodeData))
+        print("barcodeData CONTENT", barcodeData)
 
         data, repeat = get_barcodes(barcodeData, list_bill)
         data['measure']  = measure['measure']

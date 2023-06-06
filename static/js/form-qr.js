@@ -26,14 +26,7 @@ function showAlertPage(message, alert) {
 
 function updateVoucher(index, data_dat, data_type, data_bill, data_ciaruc, data_tot, data_igv) {
   div_item = document.getElementById("voucher_"+index)
-  // Set green color by 5 seconds
-  setTimeout(function () {
-    div_item.style.backgroundColor = "#d4edda"
-  }, 1000);
-  setTimeout(function () {
-    div_item.style.backgroundColor = ""
-  }, 6000);
-  //  Pass values on the item
+  // Pass values on the item
   div_item.querySelector('#date').innerHTML=data_dat;
   div_item.querySelector('#doc_type').innerHTML=data_type;
   div_item.querySelector('#doc_number').innerHTML=data_bill;
@@ -41,6 +34,17 @@ function updateVoucher(index, data_dat, data_type, data_bill, data_ciaruc, data_
   div_item.querySelector('#total').innerHTML=data_tot;
   div_item.querySelector('#igv').innerHTML=data_igv;
   div_item.querySelector('#state').innerHTML='<span class="badge text-dark" style="background-color:rgb(0, 205, 0) !important; padding: 5px 2px;">[100%]</span>'
+}
+
+function paintVoucher(index) {
+  div_item = document.getElementById("voucher_"+index)
+  // Set green color by 5 seconds
+  setTimeout(function () {
+    div_item.style.backgroundColor = "#d4edda"
+  }, 1000);
+  setTimeout(function () {
+    div_item.style.backgroundColor = ""
+  }, 6000);
 }
 
 // Function to Show Progress QR
@@ -260,68 +264,69 @@ function makeRotate(url, measure_w, measure_h, index, path) {
 // -----------------------------------------------------------------------------------------------------
 var bandScan = false
 function scanQR(_this, url, index, path) {
-  if (bandScan == false){
-    div_modal = document.getElementById("exampleModal_"+index)
-    div_image = div_modal.querySelector('#div_image');
-    div_rotate = div_modal.querySelector('#div_items').querySelector("#btn_rotate")
-    div_measure = div_modal.querySelector('#measure');
-    div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
-    div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
-    div_image.style.border = "2px dotted #00C";
+  // if (bandScan == false){
+  div_modal = document.getElementById("exampleModal_"+index)
+  div_image = div_modal.querySelector('#div_image');
+  div_rotate = div_modal.querySelector('#div_items').querySelector("#btn_rotate")
+  div_measure = div_modal.querySelector('#measure');
+  div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
+  div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
+  div_image.style.border = "2px dotted #00C";
 
-    // Create a new FormData instance
-    var data = new FormData();
-    // Create a XMLHTTPRequest instance
-    var request = new XMLHttpRequest();
-    // Set the response type
-    request.responseType = "json";
-    if (path!=""){ path_canvas = path }
+  // Create a new FormData instance
+  var data = new FormData();
+  // Create a XMLHTTPRequest instance
+  var request = new XMLHttpRequest();
+  // Set the response type
+  request.responseType = "json";
+  if (path!=""){ path_canvas = path }
 
-    var action = "scan_voucher";
-    data.append("action", action);
-    data.append("index", index);
-    data.append("path", path_canvas)
-    data.append("measure_current", div_measure.value);
+  var action = "scan_voucher";
+  data.append("action", action);
+  data.append("index", index);
+  data.append("path", path_canvas)
+  data.append("measure_current", div_measure.value);
 
-    request.addEventListener("load", function (e) {
-      if (request.status == 200) {
-        data_scan = request.response['data_scan']
-        if (data_scan=="None"){
-          alert("No se detectó QR")
-        }
-        else{
-          data_dat  = request.response['data_dat']
-          data_type = request.response['data_type']
-          data_bill = request.response['data_bill']
-          data_ciaruc = request.response['data_ciaruc']
-          data_cliruc = request.response['data_cliruc']
-          data_tot = request.response['data_tot']
-          data_igv = request.response['data_igv']
-          div_modal.querySelector('#div_items').querySelector("#data_dat").value = data_dat
-          div_modal.querySelector('#div_items').querySelector("#data_type").value = data_type
-          div_modal.querySelector('#div_items').querySelector("#data_bill").value = data_bill
-          div_modal.querySelector('#div_items').querySelector("#data_ciaruc").value = data_ciaruc
-          div_modal.querySelector('#div_items').querySelector("#data_cliruc").value = data_cliruc
-          div_modal.querySelector('#div_items').querySelector("#data_tot").value = data_tot
-          div_modal.querySelector('#div_items').querySelector("#data_igv").value = data_igv
-          alert("Voucher escaneado con éxito")
-        }
+  request.addEventListener("load", function (e) {
+    if (request.status == 200) {
+      data_scan = request.response['data_scan']
+      if (data_scan=="None"){
+        alert("No se detectó QR")
       }
-      if (request.status == 300) {
-        alert('Warming on Voucher')
-        // showAlertPage(`${request.response.message}`, 'warning')
+      else{
+        data_dat  = request.response['data_dat']
+        data_type = request.response['data_type']
+        data_bill = request.response['data_bill']
+        data_ciaruc = request.response['data_ciaruc']
+        data_cliruc = request.response['data_cliruc']
+        data_tot = request.response['data_tot']
+        data_igv = request.response['data_igv']
+        div_modal.querySelector('#div_items').querySelector("#data_dat").value = data_dat
+        div_modal.querySelector('#div_items').querySelector("#data_type").value = data_type
+        div_modal.querySelector('#div_items').querySelector("#data_bill").value = data_bill
+        div_modal.querySelector('#div_items').querySelector("#data_ciaruc").value = data_ciaruc
+        div_modal.querySelector('#div_items').querySelector("#data_cliruc").value = data_cliruc
+        div_modal.querySelector('#div_items').querySelector("#data_tot").value = data_tot
+        div_modal.querySelector('#div_items').querySelector("#data_igv").value = data_igv
+        alert("Voucher escaneado con éxito")
       }
-    });
-    // request error handler
-    request.addEventListener("error", function (e) {
-      showAlertPage('Error escaneando voucher', 'danger')
-    });
-    // Open and send the request
-    request.open("POST", url);
-    request.send(data);
     }
+    if (request.status == 300) {
+      alert('Warming on Voucher')
+      // showAlertPage(`${request.response.message}`, 'warning')
+    }
+  });
+  // request error handler
+  request.addEventListener("error", function (e) {
+    showAlertPage('Error escaneando voucher', 'danger')
+  });
+  // Open and send the request
+  request.open("POST", url);
+  request.send(data);
+    // }
 }
 
+var bandSave = false
 // --------------------------------------------------------------------------------------------------------
 function saveVoucher(_this, url, index) {
   console.log("save Voucher")
@@ -369,7 +374,7 @@ function saveVoucher(_this, url, index) {
     if (request.status == 200) {
       date_complete = request.response['date_complete']
       alert("Voucher registrado con éxito")
-      closeVoucher(index)
+      bandSave = true
       updateVoucher(index, date_complete, data_type.value, data_bill.value, data_ciaruc.value, data_tot.value, data_igv.value)
     }
     else {
@@ -461,7 +466,12 @@ function closeVoucher(index) {
   document.getElementById("exampleModal_"+index).classList.remove("show");
   elements = document.getElementsByClassName("modal-backdrop");
   while (elements.length > 0) elements[0].remove();
-  document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
+  // document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
+  if (bandSave==true){
+    paintVoucher(index);
+  }
+  // document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
+  bandSave = false
 }
 
 // ACTION in order to MOVE voucher down & up
