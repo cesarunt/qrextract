@@ -229,8 +229,8 @@ def parse_qr_data(img, measure, path, list_bill):
         for barcode in barcodes:
             barcodeText = str(barcode.data.decode("utf-8"))
             barcodeData = barcodeText.split('|')
-        print("\nbarcodeData LEN", len(barcodeData))
-        print("barcodeData CONTENT", barcodeData)
+        # print("\nbarcodeData LEN", len(barcodeData))
+        # print("barcodeData CONTENT", barcodeData)
 
         data, repeat = get_barcodes(barcodeData, list_bill)
         data['measure']  = measure['measure']
