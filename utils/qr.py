@@ -253,6 +253,8 @@ def parse_text_data(text, measure, path, list_bill):
     res_rucs = None
     patterns_cli_igv = ["IGV 18", "I.G.V", "IGV"]
     patterns_cli_tot = ["IMPORTE TOTAL", "TOTAL S" , "TOTAL"]
+    patterns_cli_fac = ["Nro:", "Nro"]
+    # FALTA AGREGAR EL RECONOCIMIENTO DE TIPO DOCUMENTO ---- FACTURA, RECIBO, ETC
     barcode_isok = 3
     data_cia_ruc = ""
     data_cli_ruc = ""
@@ -263,39 +265,54 @@ def parse_text_data(text, measure, path, list_bill):
     data_cli_typ = ""
 
     # FIND BILL NUMBER
-    res_bill_1 = re.search("[F,B]\d{3}", text)
+    res_bill_1 = re.search("[FE][0O][0O]", text)
     if res_bill_1 != None:
-        data_cli_fac = str(text[res_bill_1.start(0):]).split("\n")[0]
-        data_cli_fac = data_cli_fac.replace(" ","").replace("]","").replace("[","")
-    else:
-        match = False
-        res_bill_2 = re.search(" A\w{5,15}", text)
-        if res_bill_2 != None:
-            res_bill_ = str(res_bill_2.group(0))[1:].split(" ")[0]
-            match = re.search(r'[a-zA-Z]+', res_bill_) and re.search(r'[0-9]+', res_bill_)
-            if match:
-                data_cli_fac = res_bill_
-                data_cli_fac = data_cli_fac.replace(" ","").replace("]","").replace("[","")
+        data_cli_fac = str(text[res_bill_1.start(0):res_bill_1.end(0)+7])
+        numbers = sum(c.isdigit() for c in data_cli_fac)
+        letters = sum(c.isalpha() for c in data_cli_fac)
+        if letters > numbers:
+            data_cli_fac = re.sub("[ \.]","", data_cli_fac)
+        else:
+            data_cli_fac = str(data_cli_fac).split("\n")[0]
+    if res_bill_1 == None or data_cli_fac=="":
+        for pattern in patterns_cli_fac :
+            patt = re.search(rf"\b{pattern}", text, re.IGNORECASE)
+            if patt != None :
+                obj = str(text[patt.end(0):]).split("\n")[0].upper()
+                if len(obj)>0:
+                    data_cli_fac = str(obj.split(pattern)[-1]).replace(" ","").replace(":","").replace("$","").replace("/","")
+                    break
+        data_cli_fac = re.sub("[ \.]","", data_cli_fac)
 
     if data_cli_fac != "":
-        if data_cli_fac[0]=='F':
+        res_fac_typ = res_bill_1 = re.search("factura", text, re.IGNORECASE)
+        if res_fac_typ != None:
             data_cli_typ = "F"
-        if data_cli_fac[0]=='B':
-            data_cli_typ = "B"
-        if data_cli_fac[0:1]=='NC':
-            data_cli_typ = "NC"
-        if data_cli_fac[0:1]=='ND':
-            data_cli_typ = "ND"
-        if data_cli_fac[0:1]=='RH':
+        res_bol_typ = res_bill_1 = re.search("boleta", text, re.IGNORECASE)
+        if res_bol_typ != None:
+            data_cli_typ = "F"
+        res_vou_typ = res_bill_1 = re.search("recibo", text, re.IGNORECASE)
+        if res_vou_typ != None:
             data_cli_typ = "RH"
-        if data_cli_fac in list_bill:
-            repeat = True
+        if res_fac_typ == None and res_bol_typ == None and res_vou_typ == None:
+            if data_cli_fac[0]=='F':
+                data_cli_typ = "F"
+            if data_cli_fac[0]=='B':
+                data_cli_typ = "B"
+            if data_cli_fac[0]=='RH':
+                data_cli_typ = "RH"
+            if data_cli_fac[0:1]=='NC':
+                data_cli_typ = "NC"
+            if data_cli_fac[0:1]=='ND':
+                data_cli_typ = "ND"
+            if data_cli_fac in list_bill:
+                repeat = True
     
     if repeat == True:
         bill = data_cli_fac
     else:
         # FIND RUC
-        res_rucs = re.findall("2\d{10,}", text)
+        res_rucs = re.findall("[1,2]\d{10,}", text)
         len_ruc = len(res_rucs)    
         if len_ruc>0:
             if len_ruc == 1:

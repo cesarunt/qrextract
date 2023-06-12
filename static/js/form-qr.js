@@ -215,7 +215,7 @@ function makeRotate(url, measure_w, measure_h, index, path) {
 
       div_angle.value = angle_canvas
       div_measure.value = measure_canvas
-      div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
+      div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvas")
       div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
       var measureW
       var centerLf
@@ -429,31 +429,20 @@ function openVoucher(_this, index, data_len, measure_w, measure_h, center_w) {
   arrow = new Rectangle(canvas);
   ctx = canvas.getContext("2d");
   div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
-  // console.log("div_canvasClass", div_canvasClass)
-  // console.log("canvas_width", canvas_width)
-  // console.log("canvas_height", canvas_height)
   
   if (div_measure.value=='W'){
-    // div_canvasId.width = measure_max //
     div_canvasId.style.width = measure_max;
-    // div_canvasClass.width = measure_max //
     div_canvasClass.style.width = measure_max;
-    // div_canvasId.height = measure_min //
     div_canvasId.style.height = measure_min;
-    // div_canvasClass.height = measure_min //
     div_canvasClass.style.height = measure_min;
     div_canvasId.style.left = "0px";
     div_canvasClass.style.left = "0px";
     div_canvasId.parentNode.style.height = "480px"
   }
   else {
-    // div_canvasId.height = measure_max //
     div_canvasId.style.height = measure_max;
-    // div_canvasClass.height = measure_max //
     div_canvasClass.style.height = measure_max;
-    // div_canvasId.width = measure_min //
     div_canvasId.style.width = measure_min;
-    // div_canvasClass.width = measure_min //
     div_canvasClass.style.width = measure_min;
     div_canvasId.style.left = center_w;
     div_canvasClass.style.left = center_w;
@@ -464,13 +453,12 @@ function openVoucher(_this, index, data_len, measure_w, measure_h, center_w) {
 // ACTION in order to CLOSE voucher details
 function closeVoucher(index) {
   document.getElementById("exampleModal_"+index).classList.remove("show");
+  document.getElementById("exampleModal_"+index).setAttribute("style", `display: none;`);
   elements = document.getElementsByClassName("modal-backdrop");
   while (elements.length > 0) elements[0].remove();
-  // document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
   if (bandSave==true){
     paintVoucher(index);
   }
-  // document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
   bandSave = false
 }
 
@@ -488,20 +476,25 @@ function moveVoucher(_this, index, direct) {
   if (parseInt(_index) > 0 && parseInt(_index) < parseInt(_data_len)+1){
     document.getElementById("exampleModal_"+index).classList.remove("show");
     document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
+
+    // if (div_canvasId){
+    //   div_canvasId.remove()
+    //   // cleanCanvas()
+    // }
+    // if (div_canvasClass){
+    //   div_canvasClass.remove()
+    //   // cleanCanvas()
+    // }
+    cleanCanvas(canvas)
+    
     div_modal = document.getElementById("exampleModal_"+_index)
     div_canvasId = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector("#canvas")
     div_measure = div_modal.querySelector('#measure');
 
-    if (div_canvasClass){
-      div_canvasClass.remove()
-    }
-    canvas_width = div_canvasId.width
-    canvas_height = div_canvasId.height
-
-    canvas = new fabric.Canvas(div_canvasId);
-    arrow = new Rectangle(canvas);
-    ctx = canvas.getContext("2d");
-    div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
+    canvas_width = div_canvasId.width     // measure_w.split("px")[0]
+    console.log("canvas_width", canvas_width)
+    canvas_height = div_canvasId.height   // measure_h.split("px")[0]
+    console.log("canvas_height", canvas_height)
 
     if (parseInt(canvas_width)>parseInt(canvas_height)){
       measure_max = canvas_width
@@ -513,6 +506,17 @@ function moveVoucher(_this, index, direct) {
     }
     measure_max = measure_max.toString() + "px"
     measure_min = measure_min.toString() + "px"
+
+    canvas = new fabric.Canvas(div_canvasId);
+    arrow = new Rectangle(canvas);
+    ctx = canvas.getContext("2d");
+    div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
+    measure_min = div_canvasClass.style.width = "580px"
+    measure_max = div_canvasClass.style.height = "800px"
+    console.log("can width", div_canvasClass.style.width)
+    console.log("can height", div_canvasClass.style.height)
+    console.log("measure_max", measure_max)
+    console.log("measure_min", measure_min)
 
     if (div_measure.value=='W'){
       div_canvasId.style.width = measure_max;
@@ -528,6 +532,7 @@ function moveVoucher(_this, index, direct) {
       div_canvasClass.style.height = measure_max;
       div_canvasId.style.width = measure_min;
       div_canvasClass.style.width = measure_min;
+      console.log(measure_min)
       if (measure_min=="400px"){ centerLf = "200px" }
       if (measure_min=="460px"){ centerLf = "170px" }
       if (measure_min=="540px"){ centerLf = "130px" }
@@ -536,8 +541,12 @@ function moveVoucher(_this, index, direct) {
       div_canvasClass.style.left = centerLf;
       div_canvasId.parentNode.style.height = "800px"
     }
+    // if (div_canvasClass){
+    //   div_canvasClass.remove()
+    //   cleanCanvas()
+    // }
     div_modal.classList.add("show");
-    div_modal.setAttribute("style", `display: block`);
+    div_modal.setAttribute("style", `display: block;`);
   }
 }
 

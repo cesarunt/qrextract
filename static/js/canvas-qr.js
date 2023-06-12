@@ -126,7 +126,7 @@ var Rectangle = (function () {
 
 
 $("canvas").dblclick(function() {
-  cleanCanvas();
+  cleanCanvas(canvas);
 });
 
 function cleanCanvas(canvas) {

@@ -140,7 +140,7 @@ def qr_post():
                 elif len(data)>0:
                     list_bill.append(data['cli_fac'])
                     results.append(data)
-            results = sorted(results, key=lambda d: d['is_full']) 
+            results = sorted(results, key=lambda d: d['is_full'])
 
             print("Time:  --- %s seconds ---" % round(time.time() - start_time, 2))
             return render_template('results.html', results=results, data_len=len(results), data_repeat=len(list_repeat))

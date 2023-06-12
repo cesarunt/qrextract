@@ -119,6 +119,7 @@ def process_image(file, list_bill):
     else:
         # Extraer texto de la imagen
         text = pytesseract.image_to_string(img, lang='spa', config='--dpi 2 --psm 6')
+        # print("text", text)
         data, bill = parse_text_data(text, measure, path, list_bill)
         # Buscar datos en el texto
         return data, bill
